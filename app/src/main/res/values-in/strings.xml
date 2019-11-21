@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about">Hai, Saya Fakhri Maulana Falah, seorang Programmer Junior dari Kota Bandung, Jawa Barat, Indonesia. \n\n Cakupan:\n- 2 Tahun pengalaman pada Pemrograman Web\n- 1 Tahun pengalaman pada Pemrograman Java (Desktop)\n- 1 Tahun pengalaman pada Pemrograman Android (Java dan Kotlin)\n\nInfo Tambahan, app ini hanya mendukung Bahasa Inggris dan Bahasa Indonesia</string>
+    <string name="about_me">Tentang Saya</string>
+    <string name="language">Bahasa</string>
+    <string name="movie_backdrop">Backdrop Film</string>
+    <string name="movie_poster">Poster Film</string>
+    <string name="rating">Nilai Penonton</string>
+    <string name="released_at">"Dirilis pada "</string>
+    <string name="unavailable">Deskripsi tidak tersedia dalam bahasa ini,sayangnya API themoviedb belum mendukung bahasa ini, coba judul film atau acara lainnya. Atau ubah bahasa pada pengaturan.</string>
+    <string name="unrated">Belum ada nilai</string>
+    <string name="unreleased">Belum dirilis</string>
+    <string name="indonesia">Indonesia</string>
+    <string name="english">Inggris</string>
+    <string name="attention">App ini membutuhkan koneksi internet. mohon refresh setelah internet terkoneksi</string>
+    <string name="error">Error, terjadi kesalahan saat mengambil data dari API</string>
+    <string name="movies">Film</string>
+    <string name="show">Acara</string>
+    <string name="first_aired">Pertama ditayangkan pada </string>
+    <string name="the_movie_database">The Movie Database</string>
+    <string name="back">Tekan kembali sekali lagi untuk keluar app.</string>
+    <string name="gmail">gmail</string>
+    <string name="instagram">instagram</string>
+    <string name="linkedin">linkedin</string>
+    <string name="info">Info</string>
+    <string name="list">List</string>
+    <string name="card">Card</string>
+    <string name="grid">Grid</string>
+    <string name="overview">Gambaran</string>
+    <string name="type">type</string>
+</resources>
