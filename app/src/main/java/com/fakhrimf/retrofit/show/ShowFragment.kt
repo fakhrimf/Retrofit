@@ -9,32 +9,28 @@ import androidx.lifecycle.ViewModelProvider
 import com.fakhrimf.retrofit.AboutActivity
 import com.fakhrimf.retrofit.R
 import com.fakhrimf.retrofit.ShowDetail
-import com.fakhrimf.retrofit.main.MainVM
 import com.fakhrimf.retrofit.model.ShowModel
+import com.fakhrimf.retrofit.utils.TYPE_KEY
+import com.fakhrimf.retrofit.utils.Type
+import com.fakhrimf.retrofit.utils.VALUE_KEY
 import kotlinx.android.synthetic.main.fragment_main.srl
 import kotlinx.android.synthetic.main.fragment_show.*
 
 class ShowFragment : Fragment(), ShowUserActionListener {
-    private var type = VALUE_LIST
+    private lateinit var type: Type
     private lateinit var showVM: ShowVM
-    private lateinit var mainVM: MainVM
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setHasOptionsMenu(true)
         super.onCreate(savedInstanceState)
         showVM = ViewModelProvider(
             this,
-            ViewModelProvider.AndroidViewModelFactory(activity!!.application)
+            ViewModelProvider.AndroidViewModelFactory(activity!!.application) //Double bang call is used because AndroidViewModelFactory needed application, not application?
         ).get(ShowVM::class.java)
-        mainVM = ViewModelProvider(
-            this,
-            ViewModelProvider.AndroidViewModelFactory(activity!!.application)
-        ).get(MainVM::class.java)
+        type = showVM.getSharedPreferences()
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_show, container, false)
     }
@@ -44,13 +40,14 @@ class ShowFragment : Fragment(), ShowUserActionListener {
         super.onCreateOptionsMenu(menu, inflater)
     }
 
-    private fun setRecycler(type: String) {
+    private fun setRecycler(type: Type) {
         showVM.setRecycler(rvShow, this, type, srl)
         this.type = type
     }
 
     private fun refresh() {
         showVM.onRefresh(rvShow, this, type, srl)
+        showVM.setSharedPreferences(type)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -60,17 +57,17 @@ class ShowFragment : Fragment(), ShowUserActionListener {
                 true
             }
             R.id.card -> {
-                type = VALUE_CARD
+                type = Type.CARD
                 refresh()
                 true
             }
             R.id.grid -> {
-                type = VALUE_GRID
+                type = Type.GRID
                 refresh()
                 true
             }
             R.id.list -> {
-                type = VALUE_LIST
+                type = Type.LIST
                 refresh()
                 true
             }
@@ -82,16 +79,16 @@ class ShowFragment : Fragment(), ShowUserActionListener {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putString(TYPE_KEY, type)
+        outState.putSerializable(TYPE_KEY, type)
         super.onSaveInstanceState(outState)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        if (savedInstanceState?.getString(TYPE_KEY) == null) {
+        if (savedInstanceState?.getSerializable(TYPE_KEY) == null) {
             setRecycler(type)
         } else {
-            setRecycler(savedInstanceState.getString(TYPE_KEY) as String)
+            setRecycler(savedInstanceState.getSerializable(TYPE_KEY) as Type)
         }
         srl.setOnRefreshListener {
             refresh()
@@ -100,14 +97,7 @@ class ShowFragment : Fragment(), ShowUserActionListener {
 
     override fun onClickItem(showModel: ShowModel) {
         val intent = Intent(requireContext(), ShowDetail::class.java)
-        intent.putExtra(mainVM.getParcelKey(), showModel)
+        intent.putExtra(VALUE_KEY, showModel)
         startActivity(intent)
-    }
-
-    companion object {
-        private const val TYPE_KEY = "type"
-        private const val VALUE_CARD = "card"
-        private const val VALUE_LIST = "list"
-        private const val VALUE_GRID = "grird"
     }
 }

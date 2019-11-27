@@ -6,6 +6,10 @@
     <data>
 
         <variable
+            name="listener"
+            type="com.fakhrimf.retrofit.detail.MovieDetailUserActionListener" />
+
+        <variable
             name="vm"
             type="com.fakhrimf.retrofit.model.MovieModel" />
     </data>
@@ -19,7 +23,32 @@
             android:layout_height="wrap_content"
             tools:context=".detail.MovieDetailFragment">
 
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="16dp"
+                app:cardBackgroundColor="#00000000"
+                app:cardCornerRadius="100dp"
+                app:cardElevation="0dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageViewContainer">
+
+                <ImageView
+                    android:id="@+id/ivStar"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?android:selectableItemBackground"
+                    android:clickable="true"
+                    android:contentDescription="@string/add_to_fav"
+                    android:focusable="true"
+                    android:onClick="@{() -> listener.addToFav(vm)}"
+                    android:padding="12dp"
+                    tools:src="@drawable/ic_star_24" />
+            </androidx.cardview.widget.CardView>
+
             <ImageView
+                android:id="@+id/imageView2"
                 imgRes="@{vm.backDropPath}"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
@@ -33,9 +62,9 @@
                 android:id="@+id/imageViewContainer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="10dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="75dp"
+                app:cardCornerRadius="10dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
@@ -104,6 +133,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/tvOverviewTitle">
 
                 <TextView
+                    android:id="@+id/tvOverview"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="16dp"

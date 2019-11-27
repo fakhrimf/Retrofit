@@ -10,8 +10,6 @@
     <string name="unavailable">Deskripsi tidak tersedia dalam bahasa ini,sayangnya API themoviedb belum mendukung bahasa ini, coba judul film atau acara lainnya. Atau ubah bahasa pada pengaturan.</string>
     <string name="unrated">Belum ada nilai</string>
     <string name="unreleased">Belum dirilis</string>
-    <string name="indonesia">Indonesia</string>
-    <string name="english">Inggris</string>
     <string name="attention">App ini membutuhkan koneksi internet. mohon refresh setelah internet terkoneksi</string>
     <string name="error">Error, terjadi kesalahan saat mengambil data dari API</string>
     <string name="movies">Film</string>
@@ -27,5 +25,8 @@
     <string name="card">Card</string>
     <string name="grid">Grid</string>
     <string name="overview">Gambaran</string>
-    <string name="type">type</string>
+    <string name="favorite">Favorit</string>
+    <string name="title">Judul</string>
+    <string name="add_to_fav">Tambahkan ke favorit</string>
+    <string name="no_favorite_shows_movies_yet">Belum ada acara/film favorit</string>
 </resources>

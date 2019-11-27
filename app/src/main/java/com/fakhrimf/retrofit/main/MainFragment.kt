@@ -12,14 +12,17 @@ import com.fakhrimf.retrofit.AboutActivity
 import com.fakhrimf.retrofit.MovieDetail
 import com.fakhrimf.retrofit.R
 import com.fakhrimf.retrofit.model.MovieModel
+import com.fakhrimf.retrofit.utils.TYPE_KEY
+import com.fakhrimf.retrofit.utils.Type
+import com.fakhrimf.retrofit.utils.VALUE_KEY
 import kotlinx.android.synthetic.main.fragment_main.*
 
 class MainFragment : Fragment(), MovieUserActionListener {
-    private var type = VALUE_LIST
+    private lateinit var type: Type
     private lateinit var mainVM: MainVM
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putString(TYPE_KEY, type)
+        outState.putSerializable(TYPE_KEY, type)
         super.onSaveInstanceState(outState)
     }
 
@@ -30,11 +33,10 @@ class MainFragment : Fragment(), MovieUserActionListener {
             this,
             ViewModelProvider.AndroidViewModelFactory(activity!!.application)
         ).get(MainVM::class.java)
+        type = mainVM.getSharedPreferences()
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_main, container, false)
     }
@@ -44,13 +46,15 @@ class MainFragment : Fragment(), MovieUserActionListener {
         super.onCreateOptionsMenu(menu, inflater)
     }
 
-    private fun setRecycler(type: String) {
+    private fun setRecycler(type: Type) {
         mainVM.setRecycler(rvMovie, this, type, srl)
+        mainVM.setSharedPreferences(type)
         this.type = type
     }
 
     private fun refresh() {
         mainVM.onRefresh(rvMovie, this, type, srl)
+        mainVM.setSharedPreferences(type)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -60,17 +64,17 @@ class MainFragment : Fragment(), MovieUserActionListener {
                 true
             }
             R.id.card -> {
-                type = VALUE_CARD
+                type = Type.CARD
                 refresh()
                 true
             }
             R.id.grid -> {
-                type = VALUE_GRID
+                type = Type.GRID
                 refresh()
                 true
             }
             R.id.list -> {
-                type = VALUE_LIST
+                type = Type.LIST
                 refresh()
                 true
             }
@@ -83,10 +87,10 @@ class MainFragment : Fragment(), MovieUserActionListener {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        if (savedInstanceState?.getString(TYPE_KEY) == null) {
+        if (savedInstanceState?.getSerializable(TYPE_KEY) == null) {
             setRecycler(type)
         } else {
-            setRecycler(savedInstanceState.getString(TYPE_KEY) as String)
+            setRecycler(savedInstanceState.getSerializable(TYPE_KEY) as Type)
         }
 //        mainVM.setList(requireContext(), lvMovie, this)
         if (!mainVM.verifyInternet(activity as Activity)) {
@@ -103,14 +107,7 @@ class MainFragment : Fragment(), MovieUserActionListener {
 
     override fun onClickItem(movieModel: MovieModel) {
         val intent = Intent(requireContext(), MovieDetail::class.java)
-        intent.putExtra(mainVM.getParcelKey(), movieModel)
+        intent.putExtra(VALUE_KEY, movieModel)
         startActivity(intent)
-    }
-
-    companion object {
-        private const val TYPE_KEY = "type"
-        private const val VALUE_CARD = "card"
-        private const val VALUE_LIST = "list"
-        private const val VALUE_GRID = "grird"
     }
 }

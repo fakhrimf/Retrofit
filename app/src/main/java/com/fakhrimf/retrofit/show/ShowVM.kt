@@ -9,10 +9,10 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.fakhrimf.retrofit.BuildConfig
 import com.fakhrimf.retrofit.R
 import com.fakhrimf.retrofit.model.ShowModel
 import com.fakhrimf.retrofit.model.ShowResponse
+import com.fakhrimf.retrofit.utils.*
 import com.fakhrimf.retrofit.utils.source.remote.ApiClient
 import com.fakhrimf.retrofit.utils.source.remote.ApiInterface
 import kotlinx.coroutines.*
@@ -22,12 +22,12 @@ import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ShowVM(application: Application): AndroidViewModel(application) {
+class ShowVM(application: Application) : AndroidViewModel(application) {
     lateinit var showList: ArrayList<ShowModel>
     private val context = getApplication() as Context
     private var isLoaded = false
 
-    fun setRecycler(recyclerView: RecyclerView, listener: ShowUserActionListener, type: String, srl: SwipeRefreshLayout) {
+    fun setRecycler(recyclerView: RecyclerView, listener: ShowUserActionListener, type: Type, srl: SwipeRefreshLayout) {
         if (!isLoaded) {
             srl.isRefreshing = true
             recyclerView.apply {
@@ -45,7 +45,7 @@ class ShowVM(application: Application): AndroidViewModel(application) {
 
                 //Main Thread
                 withContext(Dispatchers.Main) {
-                    if (type == VALUE_LIST || type == VALUE_CARD) recyclerView.layoutManager =
+                    if (type == Type.LIST || type == Type.CARD) recyclerView.layoutManager =
                         LinearLayoutManager(getApplication())
                     else recyclerView.layoutManager = GridLayoutManager(getApplication(), 2)
                     recyclerView.apply {
@@ -58,20 +58,20 @@ class ShowVM(application: Application): AndroidViewModel(application) {
                 }
             }
         } else if (isLoaded) {
-            if (type == VALUE_LIST || type == VALUE_CARD) recyclerView.layoutManager =
+            if (type == Type.LIST || type == Type.CARD) recyclerView.layoutManager =
                 LinearLayoutManager(getApplication())
             else recyclerView.layoutManager = GridLayoutManager(getApplication(), 2)
             when (type) {
-                VALUE_LIST -> recyclerView.adapter =
+                Type.LIST -> recyclerView.adapter =
                     ShowListAdapter(showList, listener)
-                VALUE_CARD -> recyclerView.adapter =
+                Type.CARD -> recyclerView.adapter =
                     ShowCardAdapter(showList, listener)
                 else -> recyclerView.adapter = ShowGridAdapter(showList, listener)
             }
         }
     }
 
-    fun onRefresh(recyclerView: RecyclerView, listener: ShowUserActionListener, type: String, srl: SwipeRefreshLayout) {
+    fun onRefresh(recyclerView: RecyclerView, listener: ShowUserActionListener, type: Type, srl: SwipeRefreshLayout) {
         srl.isRefreshing = true
         recyclerView.apply {
             animate()
@@ -79,7 +79,7 @@ class ShowVM(application: Application): AndroidViewModel(application) {
                 .setDuration(DURATION)
                 .setListener(null)
         }
-        GlobalScope.launch (Dispatchers.IO) {
+        GlobalScope.launch(Dispatchers.IO) {
             //Background Thread
             val apiInterface = ApiClient.getClient().create(ApiInterface::class.java)
             getPopularShow(apiInterface, recyclerView, listener, type)
@@ -87,8 +87,8 @@ class ShowVM(application: Application): AndroidViewModel(application) {
             delay(2000)
 
             //Main Thread
-            withContext(Dispatchers.Main){
-                if (type == VALUE_LIST || type == VALUE_CARD) recyclerView.layoutManager =
+            withContext(Dispatchers.Main) {
+                if (type == Type.LIST || type == Type.CARD) recyclerView.layoutManager =
                     LinearLayoutManager(context)
                 else recyclerView.layoutManager = GridLayoutManager(context, 2)
                 recyclerView.apply {
@@ -102,8 +102,8 @@ class ShowVM(application: Application): AndroidViewModel(application) {
         }
     }
 
-    private fun getPopularShow(apiInterface: ApiInterface, recyclerView: RecyclerView, listener: ShowUserActionListener, type: String) {
-        val apiKey = BuildConfig.API_KEY
+    private fun getPopularShow(apiInterface: ApiInterface, recyclerView: RecyclerView, listener: ShowUserActionListener, type: Type) {
+        val apiKey = API_KEY
         val currentLocale = context.resources.configuration.locales.get(0)
         var locale = currentLocale.toString().split("_")[1].toLowerCase(Locale.ENGLISH)
         if (locale != LOCALE_ID) {
@@ -139,9 +139,9 @@ class ShowVM(application: Application): AndroidViewModel(application) {
                 }
 
                 when (type) {
-                    VALUE_CARD -> recyclerView.adapter =
+                    Type.CARD -> recyclerView.adapter =
                         ShowCardAdapter(showList, listener)
-                    VALUE_LIST -> recyclerView.adapter =
+                    Type.LIST -> recyclerView.adapter =
                         ShowListAdapter(showList, listener)
                     else -> recyclerView.adapter = ShowGridAdapter(showList, listener)
                 }
@@ -151,7 +151,7 @@ class ShowVM(application: Application): AndroidViewModel(application) {
     }
 
     private fun getLatestShow(apiInterface: ApiInterface): ShowModel? {
-        val apiKey = BuildConfig.API_KEY
+        val apiKey = API_KEY
         val showModel: ShowModel? = null
         val call: Call<ShowModel> = apiInterface.getLatestShow(apiKey, "en")
         call.enqueue(object : Callback<ShowModel> {
@@ -169,16 +169,34 @@ class ShowVM(application: Application): AndroidViewModel(application) {
         return showModel
     }
 
-    companion object {
-        private const val LOCALE_ID = "id"
-        private const val LOCALE_EN = "en"
-        private const val SHOW_LATEST_FAIL = "Failed to fetch Latest Shows"
-        private const val SHOW_POPULAR_FAIL = "Failed to fetch Popular Shows"
-        private const val TAG_ERROR = "ERR"
-        private const val VALUE_CARD = "card"
-        private const val VALUE_LIST = "list"
-        private const val DURATION: Long = 250
-        private const val TRANSPARENT_ALPHA = 0.0F
-        private const val OPAQUE_ALPHA = 1.0F
+    fun getSharedPreferences(): Type {
+        val prefs = context.getSharedPreferences(PREFERENCE_KEY, Context.MODE_PRIVATE)
+        return when (prefs.getString(PREFERENCE_SHOW_TYPE_KEY, VALUE_LIST)) {
+            VALUE_CARD -> {
+                Type.CARD
+            }
+            VALUE_GRID -> {
+                Type.GRID
+            }
+            else -> {
+                Type.LIST
+            }
+        }
+    }
+
+    fun setSharedPreferences(type: Type) {
+        val prefs = context.getSharedPreferences(PREFERENCE_KEY, Context.MODE_PRIVATE).edit()
+        when (type) {
+            Type.CARD -> {
+                prefs.putString(PREFERENCE_SHOW_TYPE_KEY, VALUE_CARD)
+            }
+            Type.GRID -> {
+                prefs.putString(PREFERENCE_SHOW_TYPE_KEY, VALUE_GRID)
+            }
+            else -> {
+                prefs.putString(PREFERENCE_SHOW_TYPE_KEY, VALUE_LIST)
+            }
+        }
+        prefs.apply()
     }
 }

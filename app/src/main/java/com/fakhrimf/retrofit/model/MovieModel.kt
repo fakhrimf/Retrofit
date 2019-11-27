@@ -6,16 +6,18 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class MovieModel(
-    @SerializedName("original_title")
-    val title:String?,
-    @SerializedName("overview")
-    var overview:String?,
-    @SerializedName("poster_path")
-    val posterPath:String?,
-    @SerializedName("backdrop_path")
-    val backDropPath:String?,
-    @SerializedName("release_date")
-    var releaseDate:String?,
-    @SerializedName("vote_average")
-    var vote:String?
-):Parcelable
+        var id: Int?,
+        @SerializedName("original_title")
+        val title: String?,
+        @SerializedName("overview")
+        var overview: String?,
+        @SerializedName("poster_path")
+        val posterPath: String?,
+        @SerializedName("backdrop_path")
+        val backDropPath: String?,
+        @SerializedName("release_date")
+        var releaseDate: String?,
+        @SerializedName("vote_average")
+        var vote: String?,
+        var isFavorite: Boolean?
+) : Parcelable

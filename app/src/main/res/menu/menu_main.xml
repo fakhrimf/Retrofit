@@ -20,7 +20,5 @@
         android:id="@+id/grid"
         android:title="@string/grid"/>
 
-    <item
-        android:id="@+id/settings"
-        android:title="@string/language"/>
+    <item android:title="@string/language"/>
 </menu>

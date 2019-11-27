@@ -1,18 +1,19 @@
-package com.fakhrimf.retrofit.show
+package com.fakhrimf.retrofit.favorite
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.fakhrimf.retrofit.BR
-import com.fakhrimf.retrofit.databinding.ShowItemListBinding
-import com.fakhrimf.retrofit.model.ShowModel
+import com.fakhrimf.retrofit.databinding.FavoriteItemListBinding
+import com.fakhrimf.retrofit.model.FavoriteModel
 
-class ShowListAdapter(private val item: ArrayList<ShowModel>, private val movieUserActionListener: ShowUserActionListener) : RecyclerView.Adapter<ShowListAdapter.Holder>() {
+class FavoriteListAdapter(private val item: ArrayList<FavoriteModel>) :
+    RecyclerView.Adapter<FavoriteListAdapter.Holder>() {
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): Holder {
         val inflater = LayoutInflater.from(p0.context)
-        val binding = ShowItemListBinding.inflate(inflater, p0, false)
+        val binding = FavoriteItemListBinding.inflate(inflater, p0, false)
         return Holder(binding.apply {
-            binding.listener = movieUserActionListener
+            //binding.listener = favoriteUserActionListener
         })
     }
 
@@ -24,8 +25,9 @@ class ShowListAdapter(private val item: ArrayList<ShowModel>, private val movieU
         return item.size
     }
 
-    inner class Holder(private val binding: ShowItemListBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: ShowModel) {
+    inner class Holder(private val binding: FavoriteItemListBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(item: FavoriteModel) {
             binding.setVariable(BR.vm, item)
             binding.executePendingBindings()
         }
