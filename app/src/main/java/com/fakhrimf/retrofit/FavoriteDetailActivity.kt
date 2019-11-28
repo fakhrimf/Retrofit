@@ -1,25 +1,25 @@
 package com.fakhrimf.retrofit
 
-import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.fakhrimf.retrofit.detail.MovieDetailFragment
-import com.fakhrimf.retrofit.model.MovieModel
+import android.os.Bundle
+import com.fakhrimf.retrofit.detail.FavoriteDetailFragment
+import com.fakhrimf.retrofit.model.FavoriteModel
 import com.fakhrimf.retrofit.utils.VALUE_KEY
 
-class MovieDetail : AppCompatActivity() {
+class FavoriteDetailActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val model = intent.getParcelableExtra<MovieModel>(VALUE_KEY)
+        val model = intent.getParcelableExtra<FavoriteModel>(VALUE_KEY)
         val transaction = supportFragmentManager.beginTransaction()
-        val movieFragment = MovieDetailFragment()
+        val favoriteDetailFragment = FavoriteDetailFragment()
         val bundle = Bundle()
         bundle.putParcelable(VALUE_KEY, model)
-        movieFragment.arguments = bundle
-        transaction.replace(R.id.fragmentMovieDetail, movieFragment)
+        favoriteDetailFragment.arguments = bundle
+        transaction.replace(R.id.fragmentFavoriteDetail, favoriteDetailFragment)
         transaction.addToBackStack(null)
         transaction.commit()
-        setContentView(R.layout.activity_movie_detail)
+        setContentView(R.layout.activity_favorite_detail)
     }
 
     override fun onBackPressed() {

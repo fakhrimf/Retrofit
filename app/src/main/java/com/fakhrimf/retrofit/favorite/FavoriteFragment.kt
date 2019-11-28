@@ -7,29 +7,32 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.fakhrimf.retrofit.AboutActivity
-
+import com.fakhrimf.retrofit.FavoriteDetailActivity
 import com.fakhrimf.retrofit.R
-import com.fakhrimf.retrofit.utils.Type
+import com.fakhrimf.retrofit.model.FavoriteModel
+import com.fakhrimf.retrofit.utils.VALUE_KEY
 import com.fakhrimf.retrofit.utils.source.local.FavoritesHelper
 import kotlinx.android.synthetic.main.fragment_favorite.*
 
-class FavoriteFragment : Fragment() {
+class FavoriteFragment : Fragment(), FavoriteUserActionListener {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?): View? {
+                              savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_favorite, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        val favoriteVM = ViewModelProvider.AndroidViewModelFactory(activity!!.application).create(FavoriteVM::class.java)
-        favoriteVM.setRecycler(rvFavorite,srl,tvInfo)
+        val favoriteVM = ViewModelProvider.AndroidViewModelFactory(activity!!.application)
+            .create(FavoriteVM::class.java)
+        favoriteVM.setRecycler(rvFavorite, srl, tvInfo, this)
         setHasOptionsMenu(true)
         srl.setOnRefreshListener {
-            favoriteVM.refresh(rvFavorite,srl)
+            favoriteVM.refresh(rvFavorite, srl, tvInfo, this)
         }
     }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.info -> {
@@ -63,5 +66,11 @@ class FavoriteFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         FavoritesHelper(requireContext()).close()
+    }
+
+    override fun onClickItem(favoriteModel: FavoriteModel) {
+        val intent = Intent(requireContext(), FavoriteDetailActivity::class.java)
+        intent.putExtra(VALUE_KEY, favoriteModel)
+        startActivity(intent)
     }
 }

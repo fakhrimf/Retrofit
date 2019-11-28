@@ -2,6 +2,7 @@ package com.fakhrimf.retrofit.favorite
 
 import android.app.Application
 import android.database.Cursor
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.lifecycle.AndroidViewModel
@@ -18,8 +19,7 @@ class FavoriteVM(application: Application) : AndroidViewModel(application) {
     private var isLoaded = false /*Check whether the recyclerview is loaded or not*/
 
     private fun cursorToArrayList(cursor: Cursor): ArrayList<FavoriteModel>{
-        val favlist = ArrayList<FavoriteModel>()
-        cursor.moveToFirst()
+        val favoritesList = ArrayList<FavoriteModel>()
         while (cursor.moveToNext()){
             val id = cursor.getInt(cursor.getColumnIndexOrThrow(FavColumns.ID))
             val title = cursor.getString(cursor.getColumnIndexOrThrow(FavColumns.TITLE))
@@ -28,15 +28,16 @@ class FavoriteVM(application: Application) : AndroidViewModel(application) {
             val release = cursor.getString(cursor.getColumnIndexOrThrow(FavColumns.RELEASE))
             val poster = cursor.getString(cursor.getColumnIndexOrThrow(FavColumns.POSTER))
             val backdrop = cursor.getString(cursor.getColumnIndexOrThrow(FavColumns.BACKDROP))
-            favlist.add(FavoriteModel(id,title,overview,poster,backdrop,release,vote,true))
+            favoritesList.add(FavoriteModel(id,title,overview,poster,backdrop,release,vote,true))
         }
-        return favlist
+        return favoritesList
     }
 
-    fun setRecycler(recyclerView: RecyclerView, srl: SwipeRefreshLayout, info:TextView) {
+    fun setRecycler(recyclerView: RecyclerView, srl: SwipeRefreshLayout, info:TextView, listener: FavoriteUserActionListener) {
         favoriteList = ArrayList()
         FavoritesHelper(getApplication()).open()
         if (!isLoaded) {
+            info.visibility= View.GONE
             srl.isRefreshing = true
             recyclerView.apply {
                 animate()
@@ -49,7 +50,7 @@ class FavoriteVM(application: Application) : AndroidViewModel(application) {
                 favoriteList = cursorToArrayList(cursor)
                 delay(2000)
                 withContext(Dispatchers.Main) {
-                    recyclerView.adapter = FavoriteListAdapter(favoriteList)
+                    recyclerView.adapter = FavoriteListAdapter(favoriteList, listener)
                     recyclerView.layoutManager = LinearLayoutManager(getApplication())
                     recyclerView.apply {
                         animate()
@@ -65,37 +66,17 @@ class FavoriteVM(application: Application) : AndroidViewModel(application) {
             }
         } else {
             recyclerView.layoutManager = LinearLayoutManager(getApplication())
-            recyclerView.adapter = FavoriteListAdapter(favoriteList)
+            recyclerView.adapter = FavoriteListAdapter(favoriteList, listener)
+            Log.d("CHECK", "setRecycler: "+FavoriteListAdapter(favoriteList,listener).itemCount)
             if (favoriteList.isEmpty()){
                 info.visibility = View.VISIBLE
             }
         }
     }
 
-    fun refresh(recyclerView: RecyclerView, srl: SwipeRefreshLayout) {
-        srl.isRefreshing = true
-        recyclerView.apply {
-            animate()
-                .alpha(TRANSPARENT_ALPHA)
-                .setDuration(DURATION)
-                .setListener(null)
-        }
-        GlobalScope.launch(Dispatchers.IO) {
-            val cursor = FavoritesHelper(getApplication()).queryCall()
-            favoriteList = cursorToArrayList(cursor)
-            delay(2000)
-            withContext(Dispatchers.Main) {
-                recyclerView.adapter = FavoriteListAdapter(favoriteList)
-                recyclerView.layoutManager = LinearLayoutManager(getApplication())
-                recyclerView.apply {
-                    animate()
-                        .alpha(OPAQUE_ALPHA)
-                        .setDuration(DURATION)
-                        .setListener(null)
-                }
-                srl.isRefreshing = false
-            }
-        }
+    fun refresh(recyclerView: RecyclerView, srl: SwipeRefreshLayout, info: TextView, listener: FavoriteUserActionListener) {
+        isLoaded = false
+        setRecycler(recyclerView,srl,info,listener)
     }
 
     companion object {

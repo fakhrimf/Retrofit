@@ -7,7 +7,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.fakhrimf.retrofit.R
 import com.fakhrimf.retrofit.main.MainFragment
 import com.fakhrimf.retrofit.main.MovieCardAdapter
 import com.fakhrimf.retrofit.main.MovieGridAdapter

@@ -17,6 +17,7 @@ const val TYPE_KEY = "type"
 const val API_KEY = BuildConfig.API_KEY
 const val PREFERENCE_MOVIE_TYPE_KEY = "type_movie"
 const val PREFERENCE_SHOW_TYPE_KEY = "type_show"
+const val PREFERENCE_FIRST_RUN_KEY = "first_run"
 const val PREFERENCE_KEY = "type_preference"
 const val VALUE_LIST = "list"
 const val VALUE_CARD = "card"

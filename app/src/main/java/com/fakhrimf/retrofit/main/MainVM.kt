@@ -9,7 +9,6 @@ import android.net.ConnectivityManager
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -32,13 +31,13 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class MainVM(application: Application) : AndroidViewModel(application) {
-//    lateinit var moviesList: ArrayList<MovieModel>
+    //    lateinit var moviesList: ArrayList<MovieModel>
     val context = getApplication() as Context
     private var isLoaded = false /*Check whether the recyclerview is loaded or not*/
-    val moviesList:MutableLiveData<ArrayList<MovieModel>> by lazy {
+    val moviesList: MutableLiveData<ArrayList<MovieModel>> by lazy {
         MutableLiveData<ArrayList<MovieModel>>()
     }
-    val type:MutableLiveData<Type> by lazy {
+    val type: MutableLiveData<Type> by lazy {
         MutableLiveData<Type>()
     }
 
@@ -88,17 +87,16 @@ class MainVM(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun setFavorites(){
+    private fun setFavorites() {
         FavoritesHelper(getApplication()).open()
         val cursor = FavoritesHelper(getApplication()).queryCall()
-        val favlist = cursorToArrayList(cursor)
+        val favoritesList = cursorToArrayList(cursor)
         moviesList.value?.let {
             for (i in 0 until it.size) {
-                for (o in 0 until favlist.size) {
-                    if (it[i].title == favlist[o].title) {
+                for (o in 0 until favoritesList.size) {
+                    if (it[i].title == favoritesList[o].title) {
                         it[i].isFavorite = true
                     }
-                    println("FAVORITES " + it[i].title + " and " + favlist[0].title + " status " + it[i].isFavorite)
                 }
             }
         }
@@ -155,12 +153,16 @@ class MainVM(application: Application) : AndroidViewModel(application) {
             }
 
             override fun onResponse(call: Call<MovieResponse>, response: Response<MovieResponse>) {
-                moviesList.value = response.body()!!.results
+                moviesList.value = response.body()?.results
+                if (moviesList.value == null) {
+                    Log.d(TAG_ERROR, "onResponse: Response is null")
+                    throw Exception("onResponse: Response is null, please retry")
+                }
                 moviesList.value?.let {
                     setFavorites()
                     for (i in 0 until it.size) {
                         val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-                        val date: Date = sdf.parse(it[i].releaseDate)
+                        val date: Date? = sdf.parse(it[i].releaseDate ?: "2002-04-27")
                         val check = Date() > date
                         if (check) it[i].releaseDate =
                             context.getString(R.string.released_at) + " " + it[i].releaseDate
@@ -171,7 +173,7 @@ class MainVM(application: Application) : AndroidViewModel(application) {
                             context.getString(R.string.unrated)
                         else it[i].vote =
                             context.getString(R.string.rating) + " " + it[i].vote + " / 10"
-                        if (it[i].isFavorite == null){
+                        if (it[i].isFavorite == null) {
                             it[i].isFavorite = false
                         }
                     }
@@ -184,7 +186,6 @@ class MainVM(application: Application) : AndroidViewModel(application) {
                         else -> recyclerView.adapter = MovieGridAdapter(it, listener)
                     }
                 }
-
                 isLoaded = true
             }
         })
@@ -193,8 +194,8 @@ class MainVM(application: Application) : AndroidViewModel(application) {
     fun verifyInternet(activity: Activity): Boolean {
         val connectivityManager =
             activity.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val networkInfo = connectivityManager.activeNetworkInfo
-        return networkInfo != null && networkInfo.isConnected
+        val networkInfo = connectivityManager.activeNetwork
+        return networkInfo != null
     }
 
     private fun getLatestMovies(apiInterface: ApiInterface): MovieModel? {
@@ -218,18 +219,27 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
     fun getSharedPreferences(): Type {
         val prefs = context.getSharedPreferences(PREFERENCE_KEY, MODE_PRIVATE)
-        println("TYPE = "+prefs.getString(PREFERENCE_MOVIE_TYPE_KEY, VALUE_LIST))
-        return when (prefs.getString(PREFERENCE_MOVIE_TYPE_KEY, VALUE_LIST)) {
-            VALUE_CARD -> {
-                Type.CARD
-            }
-            VALUE_GRID -> {
-                Type.GRID
-            }
-            else -> {
-                Type.LIST
+        println("TYPE = " + prefs.getString(PREFERENCE_MOVIE_TYPE_KEY, VALUE_LIST))
+        return if (firstRun()) {
+            Type.LIST
+        } else {
+            when (prefs.getString(PREFERENCE_MOVIE_TYPE_KEY, VALUE_LIST)) {
+                VALUE_CARD -> {
+                    Type.CARD
+                }
+                VALUE_GRID -> {
+                    Type.GRID
+                }
+                else -> {
+                    Type.LIST
+                }
             }
         }
+    }
+
+    private fun firstRun(): Boolean {
+        val prefs = context.getSharedPreferences(PREFERENCE_KEY, MODE_PRIVATE)
+        return prefs.getBoolean(PREFERENCE_FIRST_RUN_KEY, true)
     }
 
     fun setSharedPreferences(type: Type) {
@@ -249,19 +259,25 @@ class MainVM(application: Application) : AndroidViewModel(application) {
     }
 
 
-    private fun cursorToArrayList(cursor: Cursor): ArrayList<FavoriteModel>{
-        val favlist = ArrayList<FavoriteModel>()
+    private fun cursorToArrayList(cursor: Cursor): ArrayList<FavoriteModel> {
+        val favoritesList = ArrayList<FavoriteModel>()
         cursor.moveToFirst()
-        while (cursor.moveToNext()){
+        while (cursor.moveToNext()) {
             val id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.ID))
-            val title = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.TITLE))
-            val vote = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.VOTE))
-            val overview = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.OVERVIEW))
-            val release = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.RELEASE))
-            val poster = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.POSTER))
-            val backdrop = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.BACKDROP))
-            favlist.add(FavoriteModel(id, title, overview, poster, backdrop, release, vote, true))
+            val title =
+                cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.TITLE))
+            val vote =
+                cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.VOTE))
+            val overview =
+                cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.OVERVIEW))
+            val release =
+                cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.RELEASE))
+            val poster =
+                cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.POSTER))
+            val backdrop =
+                cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.BACKDROP))
+            favoritesList.add(FavoriteModel(id, title, overview, poster, backdrop, release, vote, true))
         }
-        return favlist
+        return favoritesList
     }
 }

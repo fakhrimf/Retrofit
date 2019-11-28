@@ -125,7 +125,7 @@ class ShowVM(application: Application) : AndroidViewModel(application) {
 
                 for (i in 0 until showList.size) {
                     val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-                    val date: Date = sdf.parse(showList[i].releaseDate)
+                    val date: Date? = sdf.parse(showList[i].releaseDate ?: "2002-04-27")
                     val check = Date() > date
                     if (check) showList[i].releaseDate =
                         context.getString(R.string.first_aired) + " " + showList[i].releaseDate
@@ -169,17 +169,33 @@ class ShowVM(application: Application) : AndroidViewModel(application) {
         return showModel
     }
 
+    private fun firstRun():Boolean {
+        val prefs = context.getSharedPreferences(PREFERENCE_KEY, Context.MODE_PRIVATE)
+        return prefs.getBoolean(PREFERENCE_FIRST_RUN_KEY, true)
+    }
+
+    private fun endFirstRun() {
+        val prefs = context.getSharedPreferences(PREFERENCE_KEY, Context.MODE_PRIVATE).edit()
+        prefs.putBoolean(PREFERENCE_FIRST_RUN_KEY, false).apply()
+    }
+
     fun getSharedPreferences(): Type {
         val prefs = context.getSharedPreferences(PREFERENCE_KEY, Context.MODE_PRIVATE)
-        return when (prefs.getString(PREFERENCE_SHOW_TYPE_KEY, VALUE_LIST)) {
-            VALUE_CARD -> {
-                Type.CARD
-            }
-            VALUE_GRID -> {
-                Type.GRID
-            }
-            else -> {
-                Type.LIST
+        return if (firstRun()){
+            endFirstRun()
+            Type.LIST
+        }
+        else {
+            return when (prefs.getString(PREFERENCE_SHOW_TYPE_KEY, VALUE_LIST)) {
+                VALUE_CARD -> {
+                    Type.CARD
+                }
+                VALUE_GRID -> {
+                    Type.GRID
+                }
+                else -> {
+                    Type.LIST
+                }
             }
         }
     }

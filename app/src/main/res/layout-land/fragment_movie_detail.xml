@@ -56,12 +56,13 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
+                android:layout_marginEnd="16dp"
                 app:cardBackgroundColor="#00000000"
                 app:cardCornerRadius="100dp"
                 app:cardElevation="0dp"
+                app:layout_constraintBottom_toBottomOf="@+id/tvTitle"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imageView3">
+                app:layout_constraintTop_toTopOf="@+id/tvTitle">
 
                 <ImageView
                     android:id="@+id/ivStar"

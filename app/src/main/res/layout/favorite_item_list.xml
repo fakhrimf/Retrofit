@@ -5,9 +5,9 @@
 
     <data>
 
-<!--        <variable-->
-<!--            name="listener"-->
-<!--            type="com.fakhrimf.retrofit.main.MovieUserActionListener" />-->
+        <variable
+            name="listener"
+            type="com.fakhrimf.retrofit.favorite.FavoriteUserActionListener" />
 
         <variable
             name="vm"
@@ -32,6 +32,7 @@
             android:id="@+id/constraintLayout"
             android:layout_width="match_parent"
             android:layout_height="100dp"
+            android:onClick="@{()->listener.onClickItem(vm)}"
             android:background="?android:selectableItemBackground"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"

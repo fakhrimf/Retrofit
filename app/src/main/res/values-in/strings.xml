@@ -29,4 +29,8 @@
     <string name="title">Judul</string>
     <string name="add_to_fav">Tambahkan ke favorit</string>
     <string name="no_favorite_shows_movies_yet">Belum ada acara/film favorit</string>
+    <string name="duplicate_constraint_error">Data sudah ada</string>
+    <string name="added_to_favorites">Ditambahkan ke favorit</string>
+    <string name="removed_from_favorites">Dihapus dari favorit</string>
+    <string name="error_delete">Tidak ada data di favorit</string>
 </resources>

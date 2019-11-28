@@ -30,4 +30,11 @@
     <string name="title">Title</string>
     <string name="add_to_fav">Add to Favorites</string>
     <string name="no_favorite_shows_movies_yet">No Favorite Shows/Movies yet</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="duplicate_constraint_error">Data already added</string>
+    <string name="added_to_favorites">Added to favorites</string>
+    <string name="removed_from_favorites">Removed from favorites</string>
+    <string name="error_delete">Data unavailable in favorites</string>
 </resources>

@@ -2,24 +2,24 @@ package com.fakhrimf.retrofit
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.fakhrimf.retrofit.detail.ShowDetailFragment
-import com.fakhrimf.retrofit.model.ShowModel
+import com.fakhrimf.retrofit.detail.MovieDetailFragment
+import com.fakhrimf.retrofit.model.MovieModel
 import com.fakhrimf.retrofit.utils.VALUE_KEY
 
-class ShowDetail : AppCompatActivity() {
+class MovieDetailActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_show_detail)
-        val model = intent.getParcelableExtra<ShowModel>(VALUE_KEY)
+        val model = intent.getParcelableExtra<MovieModel>(VALUE_KEY)
         val transaction = supportFragmentManager.beginTransaction()
-        val showFragment = ShowDetailFragment()
+        val movieFragment = MovieDetailFragment()
         val bundle = Bundle()
         bundle.putParcelable(VALUE_KEY, model)
-        showFragment.arguments = bundle
-        transaction.replace(R.id.fragmentShowDetail, showFragment)
+        movieFragment.arguments = bundle
+        transaction.replace(R.id.fragmentMovieDetail, movieFragment)
         transaction.addToBackStack(null)
         transaction.commit()
+        setContentView(R.layout.activity_movie_detail)
     }
 
     override fun onBackPressed() {

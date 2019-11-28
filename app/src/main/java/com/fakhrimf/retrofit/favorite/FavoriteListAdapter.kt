@@ -7,13 +7,13 @@ import com.fakhrimf.retrofit.BR
 import com.fakhrimf.retrofit.databinding.FavoriteItemListBinding
 import com.fakhrimf.retrofit.model.FavoriteModel
 
-class FavoriteListAdapter(private val item: ArrayList<FavoriteModel>) :
+class FavoriteListAdapter(private val item: ArrayList<FavoriteModel>, private val favoriteUserActionListener: FavoriteUserActionListener) :
     RecyclerView.Adapter<FavoriteListAdapter.Holder>() {
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): Holder {
         val inflater = LayoutInflater.from(p0.context)
         val binding = FavoriteItemListBinding.inflate(inflater, p0, false)
         return Holder(binding.apply {
-            //binding.listener = favoriteUserActionListener
+            listener = favoriteUserActionListener
         })
     }
 

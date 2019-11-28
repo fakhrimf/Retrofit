@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.fakhrimf.retrofit.AboutActivity
 import com.fakhrimf.retrofit.R
-import com.fakhrimf.retrofit.ShowDetail
+import com.fakhrimf.retrofit.ShowDetailActivity
 import com.fakhrimf.retrofit.model.ShowModel
 import com.fakhrimf.retrofit.utils.TYPE_KEY
 import com.fakhrimf.retrofit.utils.Type
@@ -96,7 +96,7 @@ class ShowFragment : Fragment(), ShowUserActionListener {
     }
 
     override fun onClickItem(showModel: ShowModel) {
-        val intent = Intent(requireContext(), ShowDetail::class.java)
+        val intent = Intent(requireContext(), ShowDetailActivity::class.java)
         intent.putExtra(VALUE_KEY, showModel)
         startActivity(intent)
     }

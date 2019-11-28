@@ -9,7 +9,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.fakhrimf.retrofit.AboutActivity
-import com.fakhrimf.retrofit.MovieDetail
+import com.fakhrimf.retrofit.MovieDetailActivity
 import com.fakhrimf.retrofit.R
 import com.fakhrimf.retrofit.model.MovieModel
 import com.fakhrimf.retrofit.utils.TYPE_KEY
@@ -106,7 +106,7 @@ class MainFragment : Fragment(), MovieUserActionListener {
     }
 
     override fun onClickItem(movieModel: MovieModel) {
-        val intent = Intent(requireContext(), MovieDetail::class.java)
+        val intent = Intent(requireContext(), MovieDetailActivity::class.java)
         intent.putExtra(VALUE_KEY, movieModel)
         startActivity(intent)
     }

@@ -4,8 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.fakhrimf.retrofit.R
@@ -15,7 +13,6 @@ import com.fakhrimf.retrofit.utils.VALUE_KEY
 import kotlinx.android.synthetic.main.fragment_movie_detail.*
 
 class MovieDetailFragment : Fragment(), MovieDetailUserActionListener {
-
     private lateinit var movieDetailVM: MovieDetailVM
 
     override fun onCreateView(
@@ -36,8 +33,8 @@ class MovieDetailFragment : Fragment(), MovieDetailUserActionListener {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        val modelcheck = movieDetailVM.checkFavorite(arguments?.getParcelable(VALUE_KEY) as MovieModel)
-        if(modelcheck){
+        val modelCheck = movieDetailVM.checkFavorite(arguments?.getParcelable<MovieModel>(VALUE_KEY) as MovieModel)
+        if(modelCheck){
             ivStar.setImageResource(R.drawable.ic_star_24_yellow)
         } else {
             ivStar.setImageResource(R.drawable.ic_star_24)
@@ -46,8 +43,8 @@ class MovieDetailFragment : Fragment(), MovieDetailUserActionListener {
 
     private var isStarred = false
     override fun addToFav(model: MovieModel) {
-        val modelcheck = movieDetailVM.checkFavorite(model)
-        isStarred = if(!isStarred && !modelcheck){
+        val modelCheck = movieDetailVM.checkFavorite(model)
+        isStarred = if(!isStarred && !modelCheck){
             ivStar.setImageResource(R.drawable.ic_star_24_yellow)
             model.isFavorite = true
             movieDetailVM.add(model)

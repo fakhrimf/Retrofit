@@ -7,11 +7,11 @@
 
         <variable
             name="listener"
-            type="com.fakhrimf.retrofit.detail.MovieDetailUserActionListener" />
+            type="com.fakhrimf.retrofit.detail.FavoriteDetailUserActionListener" />
 
         <variable
             name="vm"
-            type="com.fakhrimf.retrofit.model.MovieModel" />
+            type="com.fakhrimf.retrofit.model.FavoriteModel" />
     </data>
 
     <androidx.core.widget.NestedScrollView
@@ -20,8 +20,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:context=".detail.MovieDetailFragment">
+            android:layout_height="wrap_content">
 
             <androidx.cardview.widget.CardView
                 android:layout_width="wrap_content"
@@ -42,9 +41,9 @@
                     android:clickable="true"
                     android:contentDescription="@string/add_to_fav"
                     android:focusable="true"
-                    android:onClick="@{() -> listener.addToFav(vm)}"
+                    android:onClick="@{() -> listener.removeFromFav(vm)}"
                     android:padding="12dp"
-                    tools:src="@drawable/ic_star_24" />
+                    android:src="@drawable/ic_star_24_yellow" />
             </androidx.cardview.widget.CardView>
 
             <ImageView

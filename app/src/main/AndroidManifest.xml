@@ -14,16 +14,19 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".FavoriteDetailActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+        <activity
             android:name=".MainActivity"
             android:theme="@style/Theme.AppCompat" />
         <activity
             android:name=".AboutActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
-            android:name=".MovieDetail"
+            android:name=".MovieDetailActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
-            android:name=".ShowDetail"
+            android:name=".ShowDetailActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
             android:name=".SplashActivity"
