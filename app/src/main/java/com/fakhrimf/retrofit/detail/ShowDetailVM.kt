@@ -15,7 +15,7 @@ import java.util.ArrayList
 
 class ShowDetailVM(application: Application) : AndroidViewModel(application) {
     private fun setModel(showModel: ShowModel): FavoriteModel {
-        return FavoriteModel(showModel.id, showModel.title, showModel.overview, showModel.posterPath, showModel.backDropPath, showModel.releaseDate, showModel.vote)
+        return FavoriteModel(showModel.id, showModel.title, showModel.overview, showModel.posterPath, showModel.backDropPath, showModel.releaseDate, showModel.vote, true, showModel.type)
     }
 
     private fun cursorToArrayList(cursor: Cursor): ArrayList<FavoriteModel> {
@@ -28,7 +28,8 @@ class ShowDetailVM(application: Application) : AndroidViewModel(application) {
             val release = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.RELEASE))
             val poster = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.POSTER))
             val backdrop = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.BACKDROP))
-            favoritesList.add(FavoriteModel(id, title, overview, poster, backdrop, release, vote, true))
+            val type = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.TYPE))
+            favoritesList.add(FavoriteModel(id, title, overview, poster, backdrop, release, vote, true, type))
         }
         return favoritesList
     }
@@ -58,6 +59,7 @@ class ShowDetailVM(application: Application) : AndroidViewModel(application) {
         values.put(DatabaseContract.FavColumns.POSTER, favoriteModel.posterPath)
         values.put(DatabaseContract.FavColumns.RELEASE, favoriteModel.releaseDate)
         values.put(DatabaseContract.FavColumns.VOTE, favoriteModel.vote)
+        values.put(DatabaseContract.FavColumns.TYPE, favoriteModel.type)
         val result = favoritesHelper.insert(values)
         val context = getApplication() as Context
 

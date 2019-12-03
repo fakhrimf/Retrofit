@@ -17,7 +17,8 @@ internal class FavoritesDatabaseHelper(context: Context): SQLiteOpenHelper(conte
                 "${FavColumns.BACKDROP} TEXT, " +
                 "${FavColumns.POSTER} TEXT, " +
                 "${FavColumns.RELEASE} TEXT, " +
-                "${FavColumns.VOTE} TEXT)"
+                "${FavColumns.VOTE} TEXT, " +
+                "${FavColumns.TYPE} TEXT)"
     }
 
     override fun onCreate(db: SQLiteDatabase) {

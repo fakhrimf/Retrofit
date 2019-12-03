@@ -18,5 +18,6 @@ data class ShowModel(
         @SerializedName("first_air_date")
         var releaseDate: String?,
         @SerializedName("vote_average")
-        var vote: String?
+        var vote: String?,
+        var type: String?
 ) : Parcelable

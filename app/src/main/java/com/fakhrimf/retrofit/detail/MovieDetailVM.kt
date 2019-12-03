@@ -16,7 +16,7 @@ import java.util.*
 class MovieDetailVM(application: Application) : AndroidViewModel(application) {
 
     private fun setModel(movieModel: MovieModel): FavoriteModel {
-        return FavoriteModel(movieModel.id, movieModel.title, movieModel.overview, movieModel.posterPath, movieModel.backDropPath, movieModel.releaseDate, movieModel.vote)
+        return FavoriteModel(movieModel.id, movieModel.title, movieModel.overview, movieModel.posterPath, movieModel.backDropPath, movieModel.releaseDate, movieModel.vote, movieModel.isFavorite ?: false,movieModel.type)
     }
 
     private fun cursorToArrayList(cursor: Cursor): ArrayList<FavoriteModel> {
@@ -30,7 +30,8 @@ class MovieDetailVM(application: Application) : AndroidViewModel(application) {
             val release = cursor.getString(cursor.getColumnIndexOrThrow(FavColumns.RELEASE))
             val poster = cursor.getString(cursor.getColumnIndexOrThrow(FavColumns.POSTER))
             val backdrop = cursor.getString(cursor.getColumnIndexOrThrow(FavColumns.BACKDROP))
-            favoritesList.add(FavoriteModel(id, title, overview, poster, backdrop, release, vote, true))
+            val type = cursor.getString(cursor.getColumnIndexOrThrow(FavColumns.TYPE))
+            favoritesList.add(FavoriteModel(id, title, overview, poster, backdrop, release, vote, true, type))
         }
         return favoritesList
     }
@@ -60,6 +61,7 @@ class MovieDetailVM(application: Application) : AndroidViewModel(application) {
         values.put(FavColumns.POSTER, favoriteModel.posterPath)
         values.put(FavColumns.RELEASE, favoriteModel.releaseDate)
         values.put(FavColumns.VOTE, favoriteModel.vote)
+        values.put(FavColumns.TYPE, favoriteModel.type)
         val result = favoritesHelper.insert(values)
         val context = getApplication() as Context
 

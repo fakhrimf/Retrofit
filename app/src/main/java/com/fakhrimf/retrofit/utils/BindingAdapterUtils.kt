@@ -1,20 +1,17 @@
 package com.fakhrimf.retrofit.utils
 
+import android.annotation.SuppressLint
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.databinding.BaseObservable
 import androidx.databinding.BindingAdapter
-import androidx.lifecycle.MutableLiveData
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.fakhrimf.retrofit.main.MainFragment
-import com.fakhrimf.retrofit.main.MovieCardAdapter
-import com.fakhrimf.retrofit.main.MovieGridAdapter
-import com.fakhrimf.retrofit.main.MovieListAdapter
-import com.fakhrimf.retrofit.model.MovieModel
+import com.fakhrimf.retrofit.R
+import com.fakhrimf.retrofit.model.FavoriteModel
 import com.squareup.picasso.Picasso
+import java.text.SimpleDateFormat
+import java.util.*
 
-object BindingAdapterUtils: BaseObservable() {
+object BindingAdapterUtils : BaseObservable() {
 
     @JvmStatic
     @BindingAdapter("imgRes")
@@ -30,23 +27,76 @@ object BindingAdapterUtils: BaseObservable() {
     }
 
     @JvmStatic
-    @BindingAdapter(value = ["bind:adapter","bind:type"], requireAll = false)
-    fun setAdapter(recyclerView: RecyclerView, adapter: MutableLiveData<ArrayList<MovieModel>>, type: MutableLiveData<Type>){
-        var type1: Type? = null
-        type.value?.let {
-            if (it== Type.LIST || it == Type.CARD) recyclerView.layoutManager =
-                LinearLayoutManager(recyclerView.context)
-            else recyclerView.layoutManager = GridLayoutManager(recyclerView.context, 2)
-            type1 = it
+    @BindingAdapter("type")
+    fun setString(textView: TextView, text: String?) {
+        val context = textView.context
+        if (text == "Movies" || text == "Film") {
+            textView.setTextColor(context.getColor(R.color.movies))
+            textView.text = context.getString(R.string.movie)
+        } else {
+            textView.setTextColor(context.getColor(R.color.shows))
+            textView.text = context.getString(R.string.show)
         }
-        adapter.value?.let {
-            when (type1) {
-                Type.LIST -> recyclerView.adapter =
-                    MovieListAdapter(it, MainFragment())
-                Type.CARD -> recyclerView.adapter =
-                    MovieCardAdapter(it, MainFragment())
-                else -> recyclerView.adapter = MovieGridAdapter(it, MainFragment())
+    }
+
+    @SuppressLint("SetTextI18n")
+    @JvmStatic
+    @BindingAdapter("set_release_date_movie")
+    fun setReleaseMovie(textView: TextView, text: String) {
+        val context = textView.context
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+        val date: Date? = sdf.parse(text)
+        val check = Date() > date
+        if (check) textView.text = context.getString(R.string.released_at) + " " + text
+        else textView.text = context.getString(R.string.unreleased)
+    }
+
+    @SuppressLint("SetTextI18n")
+    @JvmStatic
+    @BindingAdapter("set_release_date_show")
+    fun setReleaseShow(textView: TextView, text: String) {
+        val context = textView.context
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+        val date: Date? = sdf.parse(text)
+        val check = Date() > date
+        if (check) textView.text = context.getString(R.string.first_aired) + " " + text
+        else textView.text = context.getString(R.string.unreleased)
+    }
+
+    @SuppressLint("SetText18n", "SetTextI18n")
+    @JvmStatic
+    @BindingAdapter("set_release_date_favorite")
+    fun setReleaseFavorite(textView: TextView, favoriteModel: FavoriteModel) {
+        val context = textView.context
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+        val date: Date? = sdf.parse(favoriteModel.releaseDate ?: "2002-04-27")
+        val check = Date() > date
+        if (check) {
+            if (favoriteModel.type == "Movies" || favoriteModel.type == "Film") {
+                textView.text =
+                    context.getString(R.string.released_at) + " " + favoriteModel.releaseDate
+            } else {
+                textView.text =
+                    context.getString(R.string.first_aired) + " " + favoriteModel.releaseDate
             }
-        }
+        } else textView.text = context.getString(R.string.unreleased)
+    }
+
+    @JvmStatic
+    @BindingAdapter("set_overview")
+    fun setOverview(textView: TextView, text: String) {
+        val context = textView.context
+        if (text == "") textView.text = context.getString(R.string.unavailable)
+        else textView.text = text
+    }
+
+    @SuppressLint("SetTextI18n")
+    @JvmStatic
+    @BindingAdapter("set_rating")
+    fun setRating(textView: TextView, text: String) {
+        val context = textView.context
+        if (text == "0.0" || text == "0") {
+            textView.text = context.getString(R.string.unrated)
+        } else textView.text = context.getString(R.string.rating) + " " + text + " / 10"
     }
 }

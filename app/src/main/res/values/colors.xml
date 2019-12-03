@@ -6,4 +6,6 @@
     <color name="gray">#212121</color>
     <color name="white">#fff</color>
     <color name="yellow">#F8DC27</color>
+    <color name="movies">#ed3b3b</color>
+    <color name="shows">#039be5</color>
 </resources>

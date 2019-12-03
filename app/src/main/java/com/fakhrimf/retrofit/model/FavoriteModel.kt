@@ -12,5 +12,6 @@ data class FavoriteModel(
         var backDropPath:String?,
         var releaseDate:String?,
         var vote:String?,
-        var isFavorite: Boolean = false
+        var isFavorite: Boolean = false,
+        var type: String?
 ):Parcelable

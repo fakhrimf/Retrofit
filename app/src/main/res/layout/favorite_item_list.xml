@@ -28,12 +28,41 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <androidx.cardview.widget.CardView
+            android:id="@+id/header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="6dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="#212121"
+            app:cardUseCompatPadding="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:padding="7dp"
+                    app:type="@{vm.type}"
+                    android:textSize="16sp"
+                    tools:text="@string/movies"
+                    tools:textColor="#ed3b3b" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout"
             android:layout_width="match_parent"
             android:layout_height="100dp"
-            android:onClick="@{()->listener.onClickItem(vm)}"
             android:background="?android:selectableItemBackground"
+            android:onClick="@{()->listener.onClickItem(vm)}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:layout_editor_absoluteX="0dp">
@@ -77,7 +106,7 @@
                 android:ellipsize="end"
                 android:maxWidth="160dp"
                 android:maxLines="1"
-                android:text="@{vm.releaseDate}"
+                app:set_release_date_favorite="@{vm}"
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -94,7 +123,7 @@
                 android:ellipsize="end"
                 android:maxWidth="160dp"
                 android:maxLines="1"
-                android:text="@{vm.vote}"
+                app:set_rating="@{vm.vote}"
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"

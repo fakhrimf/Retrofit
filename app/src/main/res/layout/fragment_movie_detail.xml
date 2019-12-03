@@ -69,6 +69,15 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
+                    android:layout_width="125dp"
+                    android:layout_height="175dp"
+                    android:contentDescription="@string/movie_poster"
+                    android:padding="50dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_no_connection"
+                    tools:src="@drawable/ic_launcher_background" />
+
+                <ImageView
                     imgRes="@{vm.posterPath}"
                     android:layout_width="125dp"
                     android:layout_height="175dp"
@@ -96,7 +105,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:text="@{vm.vote}"
+                app:set_rating="@{vm.vote}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvTitle"
                 tools:text="9.9/10" />
@@ -106,7 +115,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:text="@{vm.releaseDate}"
+                app:set_release_date_movie="@{vm.releaseDate}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvRating"
                 tools:text="Release Date" />
@@ -137,7 +146,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="16dp"
-                    android:text="@{vm.overview}"
+                    app:set_overview="@{vm.overview}"
                     tools:text="MOVIE OVERVIEW" />
             </androidx.core.widget.NestedScrollView>
 

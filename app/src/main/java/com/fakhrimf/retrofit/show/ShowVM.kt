@@ -23,9 +23,14 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class ShowVM(application: Application) : AndroidViewModel(application) {
-    lateinit var showList: ArrayList<ShowModel>
+    var showList: ArrayList<ShowModel>? = null
     private val context = getApplication() as Context
     private var isLoaded = false
+
+    override fun onCleared() {
+        super.onCleared()
+        Toast.makeText(getApplication(), "Viewmodel show cleared", Toast.LENGTH_LONG).show()
+    }
 
     fun setRecycler(recyclerView: RecyclerView, listener: ShowUserActionListener, type: Type, srl: SwipeRefreshLayout) {
         if (!isLoaded) {
@@ -61,45 +66,21 @@ class ShowVM(application: Application) : AndroidViewModel(application) {
             if (type == Type.LIST || type == Type.CARD) recyclerView.layoutManager =
                 LinearLayoutManager(getApplication())
             else recyclerView.layoutManager = GridLayoutManager(getApplication(), 2)
-            when (type) {
-                Type.LIST -> recyclerView.adapter =
-                    ShowListAdapter(showList, listener)
-                Type.CARD -> recyclerView.adapter =
-                    ShowCardAdapter(showList, listener)
-                else -> recyclerView.adapter = ShowGridAdapter(showList, listener)
+            showList?.let {
+                when (type) {
+                    Type.LIST -> recyclerView.adapter =
+                        ShowListAdapter(it, listener)
+                    Type.CARD -> recyclerView.adapter =
+                        ShowCardAdapter(it, listener)
+                    else -> recyclerView.adapter = ShowGridAdapter(it, listener)
+                }
             }
         }
     }
 
     fun onRefresh(recyclerView: RecyclerView, listener: ShowUserActionListener, type: Type, srl: SwipeRefreshLayout) {
-        srl.isRefreshing = true
-        recyclerView.apply {
-            animate()
-                .alpha(TRANSPARENT_ALPHA)
-                .setDuration(DURATION)
-                .setListener(null)
-        }
-        GlobalScope.launch(Dispatchers.IO) {
-            //Background Thread
-            val apiInterface = ApiClient.getClient().create(ApiInterface::class.java)
-            getPopularShow(apiInterface, recyclerView, listener, type)
-            getLatestShow(apiInterface)
-            delay(2000)
-
-            //Main Thread
-            withContext(Dispatchers.Main) {
-                if (type == Type.LIST || type == Type.CARD) recyclerView.layoutManager =
-                    LinearLayoutManager(context)
-                else recyclerView.layoutManager = GridLayoutManager(context, 2)
-                recyclerView.apply {
-                    animate()
-                        .alpha(OPAQUE_ALPHA)
-                        .setDuration(DURATION)
-                        .setListener(null)
-                }
-                srl.isRefreshing = false
-            }
-        }
+        isLoaded = false
+        setRecycler(recyclerView, listener, type, srl)
     }
 
     private fun getPopularShow(apiInterface: ApiInterface, recyclerView: RecyclerView, listener: ShowUserActionListener, type: Type) {
@@ -121,30 +102,22 @@ class ShowVM(application: Application) : AndroidViewModel(application) {
             }
 
             override fun onResponse(call: Call<ShowResponse>, response: Response<ShowResponse>) {
-                showList = response.body()!!.results
+                showList = response.body()?.results
 
-                for (i in 0 until showList.size) {
-                    val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-                    val date: Date? = sdf.parse(showList[i].releaseDate ?: "2002-04-27")
-                    val check = Date() > date
-                    if (check) showList[i].releaseDate =
-                        context.getString(R.string.first_aired) + " " + showList[i].releaseDate
-                    else showList[i].releaseDate = context.getString(R.string.unreleased)
-                    if (showList[i].overview == "") showList[i].overview =
-                        context.getString(R.string.unavailable)
-                    if (showList[i].vote == "0.0" || showList[i].vote == "0") showList[i].vote =
-                        context.getString(R.string.unrated)
-                    else showList[i].vote =
-                        context.getString(R.string.rating) + " " + showList[i].vote + " / 10"
+                showList?.let {
+                    for (i in 0 until it.size) {
+                        it[i].type = context.getString(R.string.shows)
+                    }
+
+                    when (type) {
+                        Type.CARD -> recyclerView.adapter =
+                            ShowCardAdapter(it, listener)
+                        Type.LIST -> recyclerView.adapter =
+                            ShowListAdapter(it, listener)
+                        else -> recyclerView.adapter = ShowGridAdapter(it, listener)
+                    }
                 }
 
-                when (type) {
-                    Type.CARD -> recyclerView.adapter =
-                        ShowCardAdapter(showList, listener)
-                    Type.LIST -> recyclerView.adapter =
-                        ShowListAdapter(showList, listener)
-                    else -> recyclerView.adapter = ShowGridAdapter(showList, listener)
-                }
                 isLoaded = true
             }
         })
@@ -169,7 +142,7 @@ class ShowVM(application: Application) : AndroidViewModel(application) {
         return showModel
     }
 
-    private fun firstRun():Boolean {
+    private fun firstRun(): Boolean {
         val prefs = context.getSharedPreferences(PREFERENCE_KEY, Context.MODE_PRIVATE)
         return prefs.getBoolean(PREFERENCE_FIRST_RUN_KEY, true)
     }
@@ -181,11 +154,10 @@ class ShowVM(application: Application) : AndroidViewModel(application) {
 
     fun getSharedPreferences(): Type {
         val prefs = context.getSharedPreferences(PREFERENCE_KEY, Context.MODE_PRIVATE)
-        return if (firstRun()){
+        return if (firstRun()) {
             endFirstRun()
             Type.LIST
-        }
-        else {
+        } else {
             return when (prefs.getString(PREFERENCE_SHOW_TYPE_KEY, VALUE_LIST)) {
                 VALUE_CARD -> {
                     Type.CARD

@@ -11,10 +11,11 @@ import com.fakhrimf.retrofit.FavoriteDetailActivity
 import com.fakhrimf.retrofit.R
 import com.fakhrimf.retrofit.model.FavoriteModel
 import com.fakhrimf.retrofit.utils.VALUE_KEY
-import com.fakhrimf.retrofit.utils.source.local.FavoritesHelper
 import kotlinx.android.synthetic.main.fragment_favorite.*
 
+// FIXME: 02/12/2019 Viewmodel recreates on rotate, but not on viewpager offscreen
 class FavoriteFragment : Fragment(), FavoriteUserActionListener {
+    private lateinit var favoriteVM: FavoriteVM
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -22,12 +23,18 @@ class FavoriteFragment : Fragment(), FavoriteUserActionListener {
         return inflater.inflate(R.layout.fragment_favorite, container, false)
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        favoriteVM = ViewModelProvider(
+            this,
+            ViewModelProvider.AndroidViewModelFactory(activity!!.application)
+        ).get(FavoriteVM::class.java)
+    }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        val favoriteVM = ViewModelProvider.AndroidViewModelFactory(activity!!.application)
-            .create(FavoriteVM::class.java)
-        favoriteVM.setRecycler(rvFavorite, srl, tvInfo, this)
         setHasOptionsMenu(true)
+        favoriteVM.setRecycler(rvFavorite, srl, tvInfo, this)
         srl.setOnRefreshListener {
             favoriteVM.refresh(rvFavorite, srl, tvInfo, this)
         }
@@ -61,11 +68,6 @@ class FavoriteFragment : Fragment(), FavoriteUserActionListener {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_main, menu)
         super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        FavoritesHelper(requireContext()).close()
     }
 
     override fun onClickItem(favoriteModel: FavoriteModel) {

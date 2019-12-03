@@ -65,6 +65,17 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <ImageView
+                        android:id="@+id/noInternet"
+                        android:src="@drawable/ic_no_connection"
+                        android:layout_width="75dp"
+                        android:layout_height="100dp"
+                        android:padding="20dp"
+                        android:contentDescription="@string/movie_poster"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"/>
+
+                    <ImageView
                         android:id="@+id/imageViewItem"
                         imgRes="@{vm.posterPath}"
                         android:layout_width="75dp"
@@ -101,7 +112,7 @@
                     android:ellipsize="end"
                     android:maxWidth="160dp"
                     android:maxLines="1"
-                    android:text="@{vm.releaseDate}"
+                    app:set_release_date_movie="@{vm.releaseDate}"
                     android:textSize="12sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
@@ -118,7 +129,7 @@
                     android:ellipsize="end"
                     android:maxWidth="160dp"
                     android:maxLines="1"
-                    android:text="@{vm.vote}"
+                    app:set_rating="@{vm.vote}"
                     android:textSize="12sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"

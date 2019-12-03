@@ -4,7 +4,6 @@ import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
-import android.database.Cursor
 import android.net.ConnectivityManager
 import android.util.Log
 import android.widget.Toast
@@ -15,12 +14,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.fakhrimf.retrofit.R
-import com.fakhrimf.retrofit.model.FavoriteModel
 import com.fakhrimf.retrofit.model.MovieModel
 import com.fakhrimf.retrofit.model.MovieResponse
 import com.fakhrimf.retrofit.utils.*
-import com.fakhrimf.retrofit.utils.source.local.DatabaseContract
-import com.fakhrimf.retrofit.utils.source.local.FavoritesHelper
 import com.fakhrimf.retrofit.utils.source.remote.ApiClient
 import com.fakhrimf.retrofit.utils.source.remote.ApiInterface
 import kotlinx.coroutines.*
@@ -87,51 +83,9 @@ class MainVM(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun setFavorites() {
-        FavoritesHelper(getApplication()).open()
-        val cursor = FavoritesHelper(getApplication()).queryCall()
-        val favoritesList = cursorToArrayList(cursor)
-        moviesList.value?.let {
-            for (i in 0 until it.size) {
-                for (o in 0 until favoritesList.size) {
-                    if (it[i].title == favoritesList[o].title) {
-                        it[i].isFavorite = true
-                    }
-                }
-            }
-        }
-    }
-
     fun onRefresh(recyclerView: RecyclerView, listener: MovieUserActionListener, type: Type, srl: SwipeRefreshLayout) {
-        srl.isRefreshing = true
-        recyclerView.apply {
-            animate()
-                .alpha(TRANSPARENT_ALPHA)
-                .setDuration(DURATION)
-                .setListener(null)
-            GlobalScope.launch(Dispatchers.IO) {
-                //Background Thread
-                val apiInterface = ApiClient.getClient().create(ApiInterface::class.java)
-                getPopularMovies(apiInterface, recyclerView, listener, type)
-                getLatestMovies(apiInterface)
-                delay(2000)
-
-                //Main Thread
-                withContext(Dispatchers.Main) {
-                    this@MainVM.type.value = type
-                    if (type == Type.LIST || type == Type.CARD) recyclerView.layoutManager =
-                        LinearLayoutManager(context)
-                    else recyclerView.layoutManager = GridLayoutManager(context, 2)
-                    recyclerView.apply {
-                        animate()
-                            .alpha(OPAQUE_ALPHA)
-                            .setDuration(DURATION)
-                            .setListener(null)
-                    }
-                    srl.isRefreshing = false
-                }
-            }
-        }
+        isLoaded = false
+        setRecycler(recyclerView,listener,type,srl)
     }
 
     private fun getPopularMovies(apiInterface: ApiInterface, recyclerView: RecyclerView, listener: MovieUserActionListener, type: Type) {
@@ -159,20 +113,9 @@ class MainVM(application: Application) : AndroidViewModel(application) {
                     throw Exception("onResponse: Response is null, please retry")
                 }
                 moviesList.value?.let {
-                    setFavorites()
+                    val context = getApplication() as Context
                     for (i in 0 until it.size) {
-                        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-                        val date: Date? = sdf.parse(it[i].releaseDate ?: "2002-04-27")
-                        val check = Date() > date
-                        if (check) it[i].releaseDate =
-                            context.getString(R.string.released_at) + " " + it[i].releaseDate
-                        else it[i].releaseDate = context.getString(R.string.unreleased)
-                        if (it[i].overview == "") it[i].overview =
-                            context.getString(R.string.unavailable)
-                        if (it[i].vote == "0.0" || it[i].vote == "0") it[i].vote =
-                            context.getString(R.string.unrated)
-                        else it[i].vote =
-                            context.getString(R.string.rating) + " " + it[i].vote + " / 10"
+                        it[i].type = context.getString(R.string.movies)
                         if (it[i].isFavorite == null) {
                             it[i].isFavorite = false
                         }
@@ -189,6 +132,11 @@ class MainVM(application: Application) : AndroidViewModel(application) {
                 isLoaded = true
             }
         })
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        Toast.makeText(getApplication(), "Viewmodel main cleared", Toast.LENGTH_LONG).show()
     }
 
     fun verifyInternet(activity: Activity): Boolean {
@@ -219,7 +167,6 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
     fun getSharedPreferences(): Type {
         val prefs = context.getSharedPreferences(PREFERENCE_KEY, MODE_PRIVATE)
-        println("TYPE = " + prefs.getString(PREFERENCE_MOVIE_TYPE_KEY, VALUE_LIST))
         return if (firstRun()) {
             Type.LIST
         } else {
@@ -256,28 +203,5 @@ class MainVM(application: Application) : AndroidViewModel(application) {
             }
         }
         prefs.apply()
-    }
-
-
-    private fun cursorToArrayList(cursor: Cursor): ArrayList<FavoriteModel> {
-        val favoritesList = ArrayList<FavoriteModel>()
-        cursor.moveToFirst()
-        while (cursor.moveToNext()) {
-            val id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.ID))
-            val title =
-                cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.TITLE))
-            val vote =
-                cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.VOTE))
-            val overview =
-                cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.OVERVIEW))
-            val release =
-                cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.RELEASE))
-            val poster =
-                cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.POSTER))
-            val backdrop =
-                cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.BACKDROP))
-            favoritesList.add(FavoriteModel(id, title, overview, poster, backdrop, release, vote, true))
-        }
-        return favoritesList
     }
 }

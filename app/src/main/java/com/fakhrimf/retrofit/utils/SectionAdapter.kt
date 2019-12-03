@@ -13,7 +13,7 @@ import com.fakhrimf.retrofit.show.ShowFragment
 class SectionAdapter(private val context: Context, fragmentManager: FragmentManager) :
     FragmentPagerAdapter(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
     @StringRes
-    private val tabTitles = intArrayOf(R.string.movies, R.string.show, R.string.favorite)
+    private val tabTitles = intArrayOf(R.string.movies, R.string.shows, R.string.favorite)
 
     override fun getItem(position: Int): Fragment {
         var fragment: Fragment? = null

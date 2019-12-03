@@ -11,9 +11,9 @@
     <string name="unrated">Belum ada nilai</string>
     <string name="unreleased">Belum dirilis</string>
     <string name="attention">App ini membutuhkan koneksi internet. mohon refresh setelah internet terkoneksi</string>
-    <string name="error">Error, terjadi kesalahan saat mengambil data dari API</string>
+    <string name="error">Error, terjadi kesalahan saat mengambil data dari API, coba beberapa saat lagi</string>
     <string name="movies">Film</string>
-    <string name="show">Acara</string>
+    <string name="shows">Acara</string>
     <string name="first_aired">Pertama ditayangkan pada </string>
     <string name="the_movie_database">The Movie Database</string>
     <string name="back">Tekan kembali sekali lagi untuk keluar app.</string>
@@ -27,6 +27,8 @@
     <string name="overview">Gambaran</string>
     <string name="favorite">Favorit</string>
     <string name="title">Judul</string>
+    <string name="movie">Film</string>
+    <string name="show">Acara</string>
     <string name="add_to_fav">Tambahkan ke favorit</string>
     <string name="no_favorite_shows_movies_yet">Belum ada acara/film favorit</string>
     <string name="duplicate_constraint_error">Data sudah ada</string>

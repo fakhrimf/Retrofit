@@ -19,5 +19,6 @@ data class MovieModel(
         var releaseDate: String?,
         @SerializedName("vote_average")
         var vote: String?,
-        var isFavorite: Boolean?
+        var isFavorite: Boolean?,
+        var type: String?
 ) : Parcelable
