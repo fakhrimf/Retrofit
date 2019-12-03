@@ -15,7 +15,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         val sectionAdapter = SectionAdapter(this, supportFragmentManager)
         viewPager.adapter = sectionAdapter
-//        viewPager.offscreenPageLimit = 3
         tabLayout.setupWithViewPager(viewPager)
         supportActionBar?.elevation = 0f
         tabLayout.background = ColorDrawable(1)
