@@ -6,7 +6,6 @@ import android.os.Handler
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.fakhrimf.retrofit.utils.SectionAdapter
-import com.fakhrimf.retrofit.utils.source.local.FavoritesHelper
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -16,6 +15,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         val sectionAdapter = SectionAdapter(this, supportFragmentManager)
         viewPager.adapter = sectionAdapter
+//        viewPager.offscreenPageLimit = 3
         tabLayout.setupWithViewPager(viewPager)
         supportActionBar?.elevation = 0f
         tabLayout.background = ColorDrawable(1)

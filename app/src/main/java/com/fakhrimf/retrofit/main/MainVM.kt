@@ -1,32 +1,23 @@
 package com.fakhrimf.retrofit.main
 
-import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
-import android.net.ConnectivityManager
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.fakhrimf.retrofit.R
 import com.fakhrimf.retrofit.model.MovieModel
 import com.fakhrimf.retrofit.model.MovieResponse
 import com.fakhrimf.retrofit.utils.*
-import com.fakhrimf.retrofit.utils.source.remote.ApiClient
 import com.fakhrimf.retrofit.utils.source.remote.ApiInterface
-import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.*
 
 class MainVM(application: Application) : AndroidViewModel(application) {
-    //    lateinit var moviesList: ArrayList<MovieModel>
     val context = getApplication() as Context
     private var isLoaded = false /*Check whether the recyclerview is loaded or not*/
     val moviesList: MutableLiveData<ArrayList<MovieModel>> by lazy {
@@ -36,50 +27,15 @@ class MainVM(application: Application) : AndroidViewModel(application) {
         MutableLiveData<Type>()
     }
 
-    fun setRecycler(recyclerView: RecyclerView, listener: MovieUserActionListener, type: Type, srl: SwipeRefreshLayout) {
-        if (!isLoaded) {
-            srl.isRefreshing = true
-            recyclerView.apply {
-                animate().alpha(TRANSPARENT_ALPHA).setDuration(DURATION).setListener(null)
-            }
-            GlobalScope.launch(Dispatchers.IO) {
-                //Background Thread, fetching API data from https://themoviedb.org
-                val apiInterface = ApiClient.getClient().create(ApiInterface::class.java)
-                getPopularMovies(apiInterface, recyclerView, listener, type)
-                getLatestMovies(apiInterface)
-                delay(2000)
-
-                //Main Thread
-                withContext(Dispatchers.Main) {
-                    this@MainVM.type.value = type
-                    if (type == Type.LIST || type == Type.CARD) recyclerView.layoutManager =
-                        LinearLayoutManager(context)
-                    else recyclerView.layoutManager = GridLayoutManager(context, 2)
-                    recyclerView.apply {
-                        animate().alpha(OPAQUE_ALPHA).setDuration(DURATION).setListener(null)
-                    }
-                    srl.isRefreshing = false
-                }
-            }
-        } else if (isLoaded) {
-            this@MainVM.type.value = type
-            if (type == Type.LIST || type == Type.CARD) recyclerView.layoutManager =
-                LinearLayoutManager(context)
-            else recyclerView.layoutManager = GridLayoutManager(context, 2)
-            when (type) {
-                Type.LIST -> recyclerView.adapter = MovieListAdapter(moviesList.value!!, listener)
-                Type.CARD -> recyclerView.adapter = MovieCardAdapter(moviesList.value!!, listener)
-                else -> recyclerView.adapter = MovieGridAdapter(moviesList.value!!, listener)
-            }
-        }
+    fun getIsLoaded(): Boolean {
+        return isLoaded
     }
 
-    fun onRefresh(recyclerView: RecyclerView, listener: MovieUserActionListener, type: Type, srl: SwipeRefreshLayout) {
-        isLoaded = false
-        setRecycler(recyclerView, listener, type, srl)
+    fun setIsLoaded(isLoaded: Boolean) {
+        this.isLoaded = isLoaded
     }
 
-    private fun getPopularMovies(apiInterface: ApiInterface, recyclerView: RecyclerView, listener: MovieUserActionListener, type: Type) {
+    fun getPopularMovies(apiInterface: ApiInterface) {
         val apiKey = API_KEY
         val currentLocale = context.resources.configuration.locales.get(0)
         var locale = currentLocale.toString().split("_")[1].toLowerCase(Locale.ENGLISH)
@@ -103,15 +59,6 @@ class MainVM(application: Application) : AndroidViewModel(application) {
                     val context = getApplication() as Context
                     for (i in 0 until it.size) {
                         it[i].type = context.getString(R.string.movies)
-                        if (it[i].isFavorite == null) {
-                            it[i].isFavorite = false
-                        }
-                    }
-
-                    when (type) {
-                        Type.LIST -> recyclerView.adapter = MovieListAdapter(it, listener)
-                        Type.CARD -> recyclerView.adapter = MovieCardAdapter(it, listener)
-                        else -> recyclerView.adapter = MovieGridAdapter(it, listener)
                     }
                 }
                 isLoaded = true
@@ -119,14 +66,7 @@ class MainVM(application: Application) : AndroidViewModel(application) {
         })
     }
 
-    fun verifyInternet(activity: Activity): Boolean {
-        val connectivityManager =
-            activity.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val networkInfo = connectivityManager.activeNetwork
-        return networkInfo != null
-    }
-
-    private fun getLatestMovies(apiInterface: ApiInterface): MovieModel? {
+    fun getLatestMovies(apiInterface: ApiInterface): MovieModel? {
         val apiKey = API_KEY
         val movie: MovieModel? = null
         val call: Call<MovieModel> = apiInterface.getLatestMovie(apiKey, "en")
@@ -151,15 +91,9 @@ class MainVM(application: Application) : AndroidViewModel(application) {
             Type.LIST
         } else {
             when (prefs.getString(PREFERENCE_MOVIE_TYPE_KEY, VALUE_LIST)) {
-                VALUE_CARD -> {
-                    Type.CARD
-                }
-                VALUE_GRID -> {
-                    Type.GRID
-                }
-                else -> {
-                    Type.LIST
-                }
+                VALUE_CARD -> Type.CARD
+                VALUE_GRID -> Type.GRID
+                else -> Type.LIST
             }
         }
     }
@@ -172,15 +106,9 @@ class MainVM(application: Application) : AndroidViewModel(application) {
     fun setSharedPreferences(type: Type) {
         val prefs = context.getSharedPreferences(PREFERENCE_KEY, MODE_PRIVATE).edit()
         when (type) {
-            Type.CARD -> {
-                prefs.putString(PREFERENCE_MOVIE_TYPE_KEY, VALUE_CARD)
-            }
-            Type.GRID -> {
-                prefs.putString(PREFERENCE_MOVIE_TYPE_KEY, VALUE_GRID)
-            }
-            else -> {
-                prefs.putString(PREFERENCE_MOVIE_TYPE_KEY, VALUE_LIST)
-            }
+            Type.CARD -> prefs.putString(PREFERENCE_MOVIE_TYPE_KEY, VALUE_CARD)
+            Type.GRID -> prefs.putString(PREFERENCE_MOVIE_TYPE_KEY, VALUE_GRID)
+            else -> prefs.putString(PREFERENCE_MOVIE_TYPE_KEY, VALUE_LIST)
         }
         prefs.apply()
     }

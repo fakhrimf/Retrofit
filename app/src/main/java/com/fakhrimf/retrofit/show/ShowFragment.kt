@@ -6,19 +6,22 @@ import android.provider.Settings
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.fakhrimf.retrofit.AboutActivity
 import com.fakhrimf.retrofit.R
 import com.fakhrimf.retrofit.ShowDetailActivity
 import com.fakhrimf.retrofit.model.ShowModel
-import com.fakhrimf.retrofit.utils.TYPE_KEY
-import com.fakhrimf.retrofit.utils.Type
-import com.fakhrimf.retrofit.utils.VALUE_KEY
-import kotlinx.android.synthetic.main.fragment_main.srl
+import com.fakhrimf.retrofit.utils.*
+import com.fakhrimf.retrofit.utils.source.remote.ApiClient
+import com.fakhrimf.retrofit.utils.source.remote.ApiInterface
 import kotlinx.android.synthetic.main.fragment_show.*
+import kotlinx.coroutines.*
 
 class ShowFragment : Fragment(), ShowUserActionListener {
     private lateinit var type: Type
     private lateinit var showVM: ShowVM
+    private lateinit var job: Job
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setHasOptionsMenu(true)
@@ -39,12 +42,60 @@ class ShowFragment : Fragment(), ShowUserActionListener {
     }
 
     private fun setRecycler(type: Type) {
-        showVM.setRecycler(rvShow, this, type, srl)
+        showVM.setSharedPreferences(type)
+        if (!showVM.getIsLoaded()) {
+            srl.isRefreshing = true
+            rvShow.apply {
+                animate().alpha(TRANSPARENT_ALPHA).setDuration(DURATION).setListener(null)
+            }
+            job = GlobalScope.launch(Dispatchers.IO) {
+                //Background Thread, fetching API data from https://themoviedb.org
+                val apiInterface = ApiClient.getClient().create(ApiInterface::class.java)
+                showVM.getPopularShow(apiInterface)
+                showVM.getLatestShow(apiInterface)
+                delay(2000)
+
+                //Main Thread
+                withContext(Dispatchers.Main) {
+                    if (type == Type.LIST || type == Type.CARD) rvShow.layoutManager =
+                        LinearLayoutManager(context)
+                    else rvShow.layoutManager = GridLayoutManager(context, 2)
+                    showVM.showList?.let {
+                        when (type) {
+                            Type.LIST -> rvShow.adapter = ShowListAdapter(it, this@ShowFragment)
+                            Type.CARD -> rvShow.adapter = ShowCardAdapter(it, this@ShowFragment)
+                            else -> rvShow.adapter = ShowGridAdapter(it, this@ShowFragment)
+                        }
+                    }
+                    rvShow.apply {
+                        animate().alpha(OPAQUE_ALPHA).setDuration(DURATION).setListener(null)
+                    }
+                    srl.isRefreshing = false
+                }
+            }
+        } else if (showVM.getIsLoaded()) {
+            showVM.showList?.let {
+                when (type) {
+                    Type.LIST -> rvShow.adapter = ShowListAdapter(it, this@ShowFragment)
+                    Type.CARD -> rvShow.adapter = ShowCardAdapter(it, this@ShowFragment)
+                    else -> rvShow.adapter = ShowGridAdapter(it, this@ShowFragment)
+                }
+            }
+            if (type == Type.LIST || type == Type.CARD) rvShow.layoutManager =
+                LinearLayoutManager(context)
+            else rvShow.layoutManager = GridLayoutManager(context, 2)
+        }
         this.type = type
     }
 
     private fun refresh() {
-        showVM.onRefresh(rvShow, this, type, srl)
+        GlobalScope.launch(Dispatchers.IO) {
+            showVM.setIsLoaded(false)
+            delay(50)
+            withContext(Dispatchers.Main) {
+                setRecycler(type)
+            }
+        }
         showVM.setSharedPreferences(type)
     }
 
@@ -97,5 +148,12 @@ class ShowFragment : Fragment(), ShowUserActionListener {
         val intent = Intent(requireContext(), ShowDetailActivity::class.java)
         intent.putExtra(VALUE_KEY, showModel)
         startActivity(intent)
+    }
+
+    override fun onPause() {
+        if (::job.isInitialized) {
+            job.cancel("User closed", null)
+        }
+        super.onPause()
     }
 }

@@ -1,25 +1,27 @@
 package com.fakhrimf.retrofit.main
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
 import android.view.*
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.fakhrimf.retrofit.AboutActivity
 import com.fakhrimf.retrofit.MovieDetailActivity
 import com.fakhrimf.retrofit.R
 import com.fakhrimf.retrofit.model.MovieModel
-import com.fakhrimf.retrofit.utils.TYPE_KEY
-import com.fakhrimf.retrofit.utils.Type
-import com.fakhrimf.retrofit.utils.VALUE_KEY
+import com.fakhrimf.retrofit.utils.*
+import com.fakhrimf.retrofit.utils.source.remote.ApiClient
+import com.fakhrimf.retrofit.utils.source.remote.ApiInterface
 import kotlinx.android.synthetic.main.fragment_main.*
+import kotlinx.coroutines.*
 
 class MainFragment : Fragment(), MovieUserActionListener {
     private lateinit var type: Type
     private lateinit var mainVM: MainVM
+    private lateinit var job: Job
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putSerializable(TYPE_KEY, type)
@@ -44,13 +46,66 @@ class MainFragment : Fragment(), MovieUserActionListener {
     }
 
     private fun setRecycler(type: Type) {
-        mainVM.setRecycler(rvMovie, this, type, srl)
         mainVM.setSharedPreferences(type)
+        if (!mainVM.getIsLoaded()) {
+            srl.isRefreshing = true
+            rvMovie.apply {
+                animate().alpha(TRANSPARENT_ALPHA).setDuration(DURATION).setListener(null)
+            }
+            val io = Dispatchers.IO
+            val main = Dispatchers.Main
+            job = GlobalScope.launch(io) {
+                //Background Thread, fetching API data from https://themoviedb.org
+                val apiInterface = ApiClient.getClient().create(ApiInterface::class.java)
+                mainVM.getPopularMovies(apiInterface)
+                mainVM.getLatestMovies(apiInterface)
+                delay(2000)
+
+                //Main Thread
+                if (activity?.isDestroyed != true) {
+                    withContext(main) {
+                        if (type == Type.LIST || type == Type.CARD) rvMovie.layoutManager =
+                            LinearLayoutManager(context)
+                        else rvMovie.layoutManager = GridLayoutManager(context, 2)
+                        mainVM.moviesList.value?.let {
+                            when (type) {
+                                Type.LIST -> rvMovie.adapter =
+                                    MovieListAdapter(it, this@MainFragment)
+                                Type.CARD -> rvMovie.adapter =
+                                    MovieCardAdapter(it, this@MainFragment)
+                                else -> rvMovie.adapter = MovieGridAdapter(it, this@MainFragment)
+                            }
+                        }
+                        rvMovie.apply {
+                            animate().alpha(OPAQUE_ALPHA).setDuration(DURATION).setListener(null)
+                        }
+                        srl.isRefreshing = false
+                    }
+                }
+            }
+        } else if (mainVM.getIsLoaded()) {
+            mainVM.moviesList.value?.let {
+                when (type) {
+                    Type.LIST -> rvMovie.adapter = MovieListAdapter(it, this@MainFragment)
+                    Type.CARD -> rvMovie.adapter = MovieCardAdapter(it, this@MainFragment)
+                    else -> rvMovie.adapter = MovieGridAdapter(it, this@MainFragment)
+                }
+            }
+            if (type == Type.LIST || type == Type.CARD) rvMovie.layoutManager =
+                LinearLayoutManager(context)
+            else rvMovie.layoutManager = GridLayoutManager(context, 2)
+        }
         this.type = type
     }
 
     private fun refresh() {
-        mainVM.onRefresh(rvMovie, this, type, srl)
+        GlobalScope.launch(Dispatchers.IO) {
+            mainVM.setIsLoaded(false)
+            delay(50)
+            withContext(Dispatchers.Main) {
+                setRecycler(type)
+            }
+        }
         mainVM.setSharedPreferences(type)
     }
 
@@ -82,16 +137,19 @@ class MainFragment : Fragment(), MovieUserActionListener {
         }
     }
 
+    override fun onPause() {
+        if(::job.isInitialized){
+            job.cancel("User closed", null)
+        }
+        super.onPause()
+    }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         if (savedInstanceState?.getSerializable(TYPE_KEY) == null) {
             setRecycler(type)
         } else {
             setRecycler(savedInstanceState.getSerializable(TYPE_KEY) as Type)
-        }
-//        mainVM.setList(requireContext(), lvMovie, this)
-        if (!mainVM.verifyInternet(activity as Activity)) {
-            Toast.makeText(requireContext(), requireContext().getString(R.string.attention), Toast.LENGTH_LONG).show()
         }
         srl.setOnRefreshListener {
             refresh()
