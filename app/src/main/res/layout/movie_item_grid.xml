@@ -41,9 +41,9 @@
                 android:id="@+id/imageViewItem"
                 imgRes="@{vm.posterPath}"
                 android:layout_width="match_parent"
-                android:contentDescription="@string/movie_poster"
                 android:layout_height="match_parent"
                 android:background="?android:selectableItemBackground"
+                android:contentDescription="@string/movie_poster"
                 android:scaleType="centerCrop"
                 tools:src="@drawable/ic_launcher_foreground" />
         </androidx.cardview.widget.CardView>

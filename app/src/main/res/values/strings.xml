@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name" translatable="false">CinemaList</string>
-    <string name="base_path_poster" translatable="false">https://image.tmdb.org/t/p/w500</string>
     <string name="nama" translatable="false">Fakhri Maulana Falah</string>
     <string name="about">Hi, I\'m Fakhri Maulana Falah, a Junior Programmer from Bandung City, West Java, Indonesia.\n\n   Scope :  \n- 2 Years of experience on Web Programming  \n- 1 Year of experience on Java Programming (Desktop)  \n- 1 Year of experience on Android Programming (Java and Kotlin)\n\nAdditional Info, this app only supports English and Bahasa Indonesia</string>
     <string name="about_me">About Me</string>
@@ -12,12 +11,12 @@
     <string name="language">Language</string>
     <string name="movie_poster">Movie Poster</string>
     <string name="movie_backdrop">Movie Backdrop</string>
-    <string name="indonesia">Indonesia</string>
-    <string name="english">English</string>
     <string name="attention">This app need an active internet connection. Please refresh after internet is connected</string>
-    <string name="error">Error, a mistake happened while trying to fetch data from API</string>
+    <string name="error">Error, a mistake happened while trying to fetch data from API, please try again later</string>
     <string name="movies">Movies</string>
-    <string name="show">Shows</string>
+    <string name="shows">Shows</string>
+    <string name="movie">Movie</string>
+    <string name="show">Show</string>
     <string name="first_aired">First Aired at </string>
     <string name="the_movie_database">The Movie Database</string>
     <string name="back">Press back again to exit the app.</string>
@@ -29,5 +28,12 @@
     <string name="card">Card</string>
     <string name="grid">Grid</string>
     <string name="overview">Overview</string>
-    <string name="type">type</string>
+    <string name="favorite">Favorite</string>
+    <string name="title">Title</string>
+    <string name="add_to_fav">Add to Favorites</string>
+    <string name="no_favorite_shows_movies_yet">No Favorite Shows/Movies yet</string>
+    <string name="duplicate_constraint_error">Data already added</string>
+    <string name="added_to_favorites">Added to favorites</string>
+    <string name="removed_from_favorites">Removed from favorites</string>
+    <string name="error_delete">Data unavailable in favorites</string>
 </resources>

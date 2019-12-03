@@ -6,6 +6,10 @@
     <data>
 
         <variable
+            name="listener"
+            type="com.fakhrimf.retrofit.detail.ShowDetailUserActionListener" />
+
+        <variable
             name="vm"
             type="com.fakhrimf.retrofit.model.ShowModel" />
     </data>
@@ -23,8 +27,8 @@
                 android:id="@+id/imageView3"
                 imgRes="@{vm.backDropPath}"
                 android:layout_width="match_parent"
-                android:alpha="0.7"
                 android:layout_height="200dp"
+                android:alpha="0.7"
                 android:contentDescription="@string/movie_backdrop"
                 android:scaleType="centerCrop"
                 app:layout_constraintTop_toTopOf="parent"
@@ -41,12 +45,19 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
+                    android:layout_width="150dp"
+                    android:layout_height="200dp"
+                    android:contentDescription="@string/movie_poster"
+                    android:padding="50dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_no_connection" />
+
+                <ImageView
                     imgRes="@{vm.posterPath}"
                     android:layout_width="150dp"
                     android:layout_height="200dp"
                     android:contentDescription="@string/movie_poster"
-                    android:scaleType="centerCrop"
-                    tools:src="@drawable/ic_launcher_background" />
+                    android:scaleType="centerCrop" />
             </androidx.cardview.widget.CardView>
 
             <TextView
@@ -65,13 +76,38 @@
                 app:layout_constraintTop_toBottomOf="@+id/imageView3"
                 tools:text="MOVIE NAME" />
 
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                app:cardBackgroundColor="#00000000"
+                app:cardCornerRadius="100dp"
+                app:cardElevation="0dp"
+                app:layout_constraintBottom_toBottomOf="@+id/tvTitle"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tvTitle">
+
+                <ImageView
+                    android:id="@+id/ivStar"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?android:selectableItemBackground"
+                    android:clickable="true"
+                    android:contentDescription="@string/add_to_fav"
+                    android:focusable="true"
+                    android:onClick="@{() -> listener.addToFav(vm)}"
+                    android:padding="12dp"
+                    tools:src="@drawable/ic_star_24" />
+            </androidx.cardview.widget.CardView>
+
             <TextView
                 android:id="@+id/tvRating"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="7dp"
-                android:text="@{vm.vote}"
+                app:set_rating="@{vm.vote}"
                 android:textSize="15sp"
                 app:layout_constraintStart_toEndOf="@+id/imageViewContainer"
                 app:layout_constraintTop_toBottomOf="@+id/tvTitle"
@@ -81,9 +117,9 @@
                 android:id="@+id/tvReleaseDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="7dp"
                 android:layout_marginStart="16dp"
-                android:text="@{vm.releaseDate}"
+                android:layout_marginTop="7dp"
+                app:set_release_date_show="@{vm.releaseDate}"
                 android:textSize="15sp"
                 app:layout_constraintStart_toEndOf="@+id/tvRating"
                 app:layout_constraintTop_toBottomOf="@+id/tvTitle"
@@ -114,7 +150,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="16dp"
-                    android:text="@{vm.overview}"
+                    app:set_overview="@{vm.overview}"
                     android:textSize="15sp"
                     tools:text="MOVIE OVERVIEW" />
             </androidx.core.widget.NestedScrollView>

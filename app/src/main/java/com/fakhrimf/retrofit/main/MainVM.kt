@@ -1,111 +1,42 @@
 package com.fakhrimf.retrofit.main
 
-import android.app.Activity
 import android.app.Application
 import android.content.Context
-import android.net.ConnectivityManager
+import android.content.Context.MODE_PRIVATE
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.fakhrimf.retrofit.BuildConfig
+import androidx.lifecycle.MutableLiveData
 import com.fakhrimf.retrofit.R
 import com.fakhrimf.retrofit.model.MovieModel
 import com.fakhrimf.retrofit.model.MovieResponse
-import com.fakhrimf.retrofit.utils.source.remote.ApiClient
+import com.fakhrimf.retrofit.utils.*
 import com.fakhrimf.retrofit.utils.source.remote.ApiInterface
-import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.text.SimpleDateFormat
 import java.util.*
 
 class MainVM(application: Application) : AndroidViewModel(application) {
-    lateinit var moviesList: ArrayList<MovieModel>
+    val context = getApplication() as Context
     private var isLoaded = false /*Check whether the recyclerview is loaded or not*/
-
-    fun setRecycler(recyclerView: RecyclerView, listener: MovieUserActionListener, type: String, srl: SwipeRefreshLayout) {
-        if (!isLoaded) {
-            srl.isRefreshing = true
-            recyclerView.apply {
-                animate()
-                    .alpha(TRANSPARENT_ALPHA)
-                    .setDuration(DURATION)
-                    .setListener(null)
-            }
-            GlobalScope.launch(Dispatchers.IO) {
-                //Background Thread, fetching API data from https://themoviedb.org
-                val apiInterface = ApiClient.getClient().create(ApiInterface::class.java)
-                getPopularMovies(apiInterface, recyclerView, listener, type)
-                getLatestMovies(apiInterface)
-                delay(2000)
-
-                //Main Thread
-                withContext(Dispatchers.Main) {
-                    if (type == VALUE_LIST || type == VALUE_CARD) recyclerView.layoutManager =
-                        LinearLayoutManager(getApplication())
-                    else recyclerView.layoutManager = GridLayoutManager(getApplication(), 2)
-                    recyclerView.apply {
-                        animate()
-                            .alpha(OPAQUE_ALPHA)
-                            .setDuration(DURATION)
-                            .setListener(null)
-                    }
-                    srl.isRefreshing = false
-                }
-            }
-        } else if (isLoaded) {
-            if (type == VALUE_LIST || type == VALUE_CARD) recyclerView.layoutManager =
-                LinearLayoutManager(getApplication())
-            else recyclerView.layoutManager = GridLayoutManager(getApplication(), 2)
-            when (type) {
-                VALUE_LIST -> recyclerView.adapter =
-                    MovieListAdapter(moviesList, listener)
-                VALUE_CARD -> recyclerView.adapter =
-                    MovieCardAdapter(moviesList, listener)
-                else -> recyclerView.adapter = MovieGridAdapter(moviesList, listener)
-            }
-        }
+    val moviesList: MutableLiveData<ArrayList<MovieModel>> by lazy {
+        MutableLiveData<ArrayList<MovieModel>>()
+    }
+    val type: MutableLiveData<Type> by lazy {
+        MutableLiveData<Type>()
     }
 
-    fun onRefresh(recyclerView: RecyclerView, listener: MovieUserActionListener, type: String, srl: SwipeRefreshLayout) {
-        srl.isRefreshing = true
-        recyclerView.apply {
-            animate()
-                .alpha(TRANSPARENT_ALPHA)
-                .setDuration(DURATION)
-                .setListener(null)
-            GlobalScope.launch(Dispatchers.IO) {
-                //Background Thread
-                val apiInterface = ApiClient.getClient().create(ApiInterface::class.java)
-                getPopularMovies(apiInterface, recyclerView, listener, type)
-                getLatestMovies(apiInterface)
-                delay(2000)
-
-                //Main Thread
-                withContext(Dispatchers.Main) {
-                    if (type == VALUE_LIST || type == VALUE_CARD) recyclerView.layoutManager =
-                        LinearLayoutManager(getApplication())
-                    else recyclerView.layoutManager = GridLayoutManager(getApplication(), 2)
-                    recyclerView.apply {
-                        animate()
-                            .alpha(OPAQUE_ALPHA)
-                            .setDuration(DURATION)
-                            .setListener(null)
-                    }
-                    srl.isRefreshing = false
-                }
-            }
-        }
+    fun getIsLoaded(): Boolean {
+        return isLoaded
     }
 
-    private fun getPopularMovies(apiInterface: ApiInterface, recyclerView: RecyclerView, listener: MovieUserActionListener, type: String) {
-        val apiKey = BuildConfig.API_KEY
-        val context = getApplication() as Context
+    fun setIsLoaded(isLoaded: Boolean) {
+        this.isLoaded = isLoaded
+    }
+
+    fun getPopularMovies(apiInterface: ApiInterface) {
+        val apiKey = API_KEY
         val currentLocale = context.resources.configuration.locales.get(0)
         var locale = currentLocale.toString().split("_")[1].toLowerCase(Locale.ENGLISH)
         if (locale != LOCALE_ID) {
@@ -114,53 +45,29 @@ class MainVM(application: Application) : AndroidViewModel(application) {
         val call: Call<MovieResponse> = apiInterface.getPopularMovie(apiKey, locale)
         call.enqueue(object : Callback<MovieResponse> {
             override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
-                Toast.makeText(
-                    getApplication(),
-                    context.getString(R.string.error),
-                    Toast.LENGTH_LONG
-                ).show()
+                Toast.makeText(context, context.getString(R.string.error), Toast.LENGTH_LONG).show()
                 Log.d(TAG_ERROR, MOVIE_POPULAR_FAIL)
             }
 
             override fun onResponse(call: Call<MovieResponse>, response: Response<MovieResponse>) {
-                moviesList = response.body()!!.results
-                for (i in 0 until moviesList.size) {
-                    val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-                    val date: Date = sdf.parse(moviesList[i].releaseDate)
-                    val check = Date() > date
-                    if (check) moviesList[i].releaseDate =
-                        context.getString(R.string.released_at) + " " + moviesList[i].releaseDate
-                    else moviesList[i].releaseDate = context.getString(R.string.unreleased)
-                    if (moviesList[i].overview == "") moviesList[i].overview =
-                        context.getString(R.string.unavailable)
-                    if (moviesList[i].vote == "0.0" || moviesList[i].vote == "0") moviesList[i].vote =
-                        context.getString(R.string.unrated)
-                    else moviesList[i].vote =
-                        context.getString(R.string.rating) + " " + moviesList[i].vote + " / 10"
+                moviesList.value = response.body()?.results
+                if (moviesList.value == null) {
+                    Log.d(TAG_ERROR, "onResponse: Response is null")
+                    throw Exception("onResponse: Response is null, please retry")
                 }
-
-                when (type) {
-                    VALUE_LIST -> recyclerView.adapter =
-                        MovieListAdapter(moviesList, listener)
-                    VALUE_CARD -> recyclerView.adapter =
-                        MovieCardAdapter(moviesList, listener)
-                    else -> recyclerView.adapter = MovieGridAdapter(moviesList, listener)
+                moviesList.value?.let {
+                    val context = getApplication() as Context
+                    for (i in 0 until it.size) {
+                        it[i].type = context.getString(R.string.movies)
+                    }
                 }
-
                 isLoaded = true
             }
         })
     }
 
-    fun verifyInternet(activity: Activity): Boolean {
-        val connectivityManager =
-            activity.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val networkInfo = connectivityManager.activeNetworkInfo
-        return networkInfo != null && networkInfo.isConnected
-    }
-
-    private fun getLatestMovies(apiInterface: ApiInterface): MovieModel? {
-        val apiKey = BuildConfig.API_KEY
+    fun getLatestMovies(apiInterface: ApiInterface): MovieModel? {
+        val apiKey = API_KEY
         val movie: MovieModel? = null
         val call: Call<MovieModel> = apiInterface.getLatestMovie(apiKey, "en")
         call.enqueue(object : Callback<MovieModel> {
@@ -178,21 +85,31 @@ class MainVM(application: Application) : AndroidViewModel(application) {
         return movie
     }
 
-    fun getParcelKey(): String {
-        return VALUE_KEY
+    fun getSharedPreferences(): Type {
+        val prefs = context.getSharedPreferences(PREFERENCE_KEY, MODE_PRIVATE)
+        return if (firstRun()) {
+            Type.LIST
+        } else {
+            when (prefs.getString(PREFERENCE_MOVIE_TYPE_KEY, VALUE_LIST)) {
+                VALUE_CARD -> Type.CARD
+                VALUE_GRID -> Type.GRID
+                else -> Type.LIST
+            }
+        }
     }
 
-    companion object {
-        private const val LOCALE_ID = "id"
-        private const val LOCALE_EN = "en"
-        private const val MOVIE_LATEST_FAIL = "Failed to fetch Latest Movies"
-        private const val MOVIE_POPULAR_FAIL = "Failed to fetch Popular Movies"
-        private const val TAG_ERROR = "ERR"
-        private const val VALUE_CARD = "card"
-        private const val VALUE_LIST = "list"
-        private const val VALUE_KEY = "model"
-        private const val DURATION: Long = 250
-        private const val TRANSPARENT_ALPHA = 0.0F
-        private const val OPAQUE_ALPHA = 1.0F
+    private fun firstRun(): Boolean {
+        val prefs = context.getSharedPreferences(PREFERENCE_KEY, MODE_PRIVATE)
+        return prefs.getBoolean(PREFERENCE_FIRST_RUN_KEY, true)
+    }
+
+    fun setSharedPreferences(type: Type) {
+        val prefs = context.getSharedPreferences(PREFERENCE_KEY, MODE_PRIVATE).edit()
+        when (type) {
+            Type.CARD -> prefs.putString(PREFERENCE_MOVIE_TYPE_KEY, VALUE_CARD)
+            Type.GRID -> prefs.putString(PREFERENCE_MOVIE_TYPE_KEY, VALUE_GRID)
+            else -> prefs.putString(PREFERENCE_MOVIE_TYPE_KEY, VALUE_LIST)
+        }
+        prefs.apply()
     }
 }

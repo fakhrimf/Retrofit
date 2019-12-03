@@ -6,6 +6,10 @@
     <data>
 
         <variable
+            name="listener"
+            type="com.fakhrimf.retrofit.detail.MovieDetailUserActionListener" />
+
+        <variable
             name="vm"
             type="com.fakhrimf.retrofit.model.MovieModel" />
     </data>
@@ -19,7 +23,32 @@
             android:layout_height="wrap_content"
             tools:context=".detail.MovieDetailFragment">
 
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                app:cardBackgroundColor="#00000000"
+                app:cardCornerRadius="100dp"
+                app:cardElevation="0dp"
+                app:layout_constraintBottom_toBottomOf="@+id/tvTitle"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tvTitle">
+
+                <ImageView
+                    android:id="@+id/ivStar"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?android:selectableItemBackground"
+                    android:clickable="true"
+                    android:contentDescription="@string/add_to_fav"
+                    android:focusable="true"
+                    android:onClick="@{() -> listener.addToFav(vm)}"
+                    android:padding="12dp"
+                    tools:src="@drawable/ic_star_24" />
+            </androidx.cardview.widget.CardView>
+
             <ImageView
+                android:id="@+id/imageView2"
                 imgRes="@{vm.backDropPath}"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
@@ -33,11 +62,20 @@
                 android:id="@+id/imageViewContainer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="10dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="75dp"
+                app:cardCornerRadius="10dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:layout_width="125dp"
+                    android:layout_height="175dp"
+                    android:contentDescription="@string/movie_poster"
+                    android:padding="50dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_no_connection"
+                    tools:src="@drawable/ic_launcher_background" />
 
                 <ImageView
                     imgRes="@{vm.posterPath}"
@@ -67,7 +105,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:text="@{vm.vote}"
+                app:set_rating="@{vm.vote}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvTitle"
                 tools:text="9.9/10" />
@@ -77,7 +115,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:text="@{vm.releaseDate}"
+                app:set_release_date_movie="@{vm.releaseDate}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvRating"
                 tools:text="Release Date" />
@@ -104,10 +142,11 @@
                 app:layout_constraintTop_toBottomOf="@+id/tvOverviewTitle">
 
                 <TextView
+                    android:id="@+id/tvOverview"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="16dp"
-                    android:text="@{vm.overview}"
+                    app:set_overview="@{vm.overview}"
                     tools:text="MOVIE OVERVIEW" />
             </androidx.core.widget.NestedScrollView>
 
