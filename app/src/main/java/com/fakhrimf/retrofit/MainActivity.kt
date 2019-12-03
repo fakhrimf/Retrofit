@@ -26,11 +26,11 @@ class MainActivity : AppCompatActivity() {
     override fun onBackPressed() {
         if (back) super.onBackPressed()
         else {
-            Toast.makeText(applicationContext,getString(R.string.back), Toast.LENGTH_LONG).show()
+            Toast.makeText(applicationContext, getString(R.string.back), Toast.LENGTH_LONG).show()
             back = true
         }
         mHandler.postDelayed({
             back = true
-        },2000)
+        }, 2000)
     }
 }

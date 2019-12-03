@@ -11,7 +11,7 @@ import com.fakhrimf.retrofit.model.FavoriteModel
 import com.fakhrimf.retrofit.model.ShowModel
 import com.fakhrimf.retrofit.utils.source.local.DatabaseContract
 import com.fakhrimf.retrofit.utils.source.local.FavoritesHelper
-import java.util.ArrayList
+import java.util.*
 
 class ShowDetailVM(application: Application) : AndroidViewModel(application) {
     private fun setModel(showModel: ShowModel): FavoriteModel {
@@ -20,15 +20,22 @@ class ShowDetailVM(application: Application) : AndroidViewModel(application) {
 
     private fun cursorToArrayList(cursor: Cursor): ArrayList<FavoriteModel> {
         val favoritesList = ArrayList<FavoriteModel>()
-        while (cursor.moveToNext()){
+        while (cursor.moveToNext()) {
             val id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.ID))
-            val title = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.TITLE))
-            val vote = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.VOTE))
-            val overview = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.OVERVIEW))
-            val release = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.RELEASE))
-            val poster = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.POSTER))
-            val backdrop = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.BACKDROP))
-            val type = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.TYPE))
+            val title =
+                cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.TITLE))
+            val vote =
+                cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.VOTE))
+            val overview =
+                cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.OVERVIEW))
+            val release =
+                cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.RELEASE))
+            val poster =
+                cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.POSTER))
+            val backdrop =
+                cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.BACKDROP))
+            val type =
+                cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.TYPE))
             favoritesList.add(FavoriteModel(id, title, overview, poster, backdrop, release, vote, true, type))
         }
         return favoritesList
@@ -39,15 +46,15 @@ class ShowDetailVM(application: Application) : AndroidViewModel(application) {
         val cursor = FavoritesHelper(getApplication()).queryCall()
         val favoritesList = cursorToArrayList(cursor)
         var check = false
-        for (i in 0 until favoritesList.size){
-            if (showModel.id == favoritesList[i].id){
+        for (i in 0 until favoritesList.size) {
+            if (showModel.id == favoritesList[i].id) {
                 check = true
             }
         }
         return check
     }
 
-    fun add(showModel: ShowModel){
+    fun add(showModel: ShowModel) {
         val favoritesHelper = FavoritesHelper.getInstance(getApplication())
         favoritesHelper.open()
         val values = ContentValues()
@@ -63,32 +70,27 @@ class ShowDetailVM(application: Application) : AndroidViewModel(application) {
         val result = favoritesHelper.insert(values)
         val context = getApplication() as Context
 
-        if(result > 0){
-            Toast.makeText(context , "${showModel.title} " + context.getString(R.string.added_to_favorites), Toast.LENGTH_LONG)
-                .show()
+        if (result > 0) {
+            Toast.makeText(context, "${showModel.title} " + context.getString(R.string.added_to_favorites), Toast.LENGTH_LONG).show()
         } else {
-            Toast.makeText(context, context.getString(R.string.duplicate_constraint_error), Toast.LENGTH_LONG)
-                .show()
+            Toast.makeText(context, context.getString(R.string.duplicate_constraint_error), Toast.LENGTH_LONG).show()
         }
     }
 
-    fun delete(showModel: ShowModel){
+    fun delete(showModel: ShowModel) {
         val favoritesHelper = FavoritesHelper.getInstance(getApplication())
         favoritesHelper.open()
         val favoriteModel = setModel(showModel)
         val result = favoritesHelper.delete(favoriteModel.id as Int)
         val context = getApplication() as Context
-        if (result > 0){
-            Toast.makeText(context, "${showModel.title} " + context.getString(R.string.removed_from_favorites), Toast.LENGTH_LONG)
-                .show()
+        if (result > 0) {
+            Toast.makeText(context, "${showModel.title} " + context.getString(R.string.removed_from_favorites), Toast.LENGTH_LONG).show()
         } else {
-            val resultTwo = favoritesHelper.delete(favoriteModel.title+"")
-            if (resultTwo > 0){
-                Toast.makeText(getApplication(), "${showModel.title} " + context.getString(R.string.removed_from_favorites), Toast.LENGTH_LONG)
-                    .show()
+            val resultTwo = favoritesHelper.delete(favoriteModel.title + "")
+            if (resultTwo > 0) {
+                Toast.makeText(getApplication(), "${showModel.title} " + context.getString(R.string.removed_from_favorites), Toast.LENGTH_LONG).show()
             } else {
-                Toast.makeText(getApplication(), context.getString(R.string.error_delete), Toast.LENGTH_LONG)
-                    .show()
+                Toast.makeText(getApplication(), context.getString(R.string.error_delete), Toast.LENGTH_LONG).show()
             }
         }
     }

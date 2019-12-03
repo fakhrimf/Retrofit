@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.fakhrimf.retrofit.utils.source.local.DatabaseContract.FavColumns
 
-internal class FavoritesDatabaseHelper(context: Context): SQLiteOpenHelper(context, DB_NAME, null, DB_VER) {
+internal class FavoritesDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_VER) {
     companion object {
         private const val DB_NAME = "db_cinemalistfavorites"
         private const val DB_VER = 1

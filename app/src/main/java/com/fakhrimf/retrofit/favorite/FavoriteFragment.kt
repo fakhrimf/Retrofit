@@ -17,18 +17,15 @@ import kotlinx.android.synthetic.main.fragment_favorite.*
 class FavoriteFragment : Fragment(), FavoriteUserActionListener {
     private lateinit var favoriteVM: FavoriteVM
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_favorite, container, false)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        favoriteVM = ViewModelProvider(
-            this,
-            ViewModelProvider.AndroidViewModelFactory(activity!!.application)
-        ).get(FavoriteVM::class.java)
+        favoriteVM =
+            ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory(activity!!.application)).get(FavoriteVM::class.java)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

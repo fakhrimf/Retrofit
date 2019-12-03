@@ -15,15 +15,13 @@ import kotlinx.android.synthetic.main.fragment_movie_detail.*
 class MovieDetailFragment : Fragment(), MovieDetailUserActionListener {
     private lateinit var movieDetailVM: MovieDetailVM
 
-    override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val binding = FragmentMovieDetailBinding.inflate(inflater, container, false)
         val view = binding.root
         val model = arguments?.getParcelable<MovieModel>(VALUE_KEY)
-        movieDetailVM = ViewModelProvider.AndroidViewModelFactory(activity!!.application).create(MovieDetailVM::class.java)
+        movieDetailVM =
+            ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory(activity!!.application)).get(MovieDetailVM::class.java)
         binding.apply {
             vm = model
             listener = this@MovieDetailFragment
@@ -33,8 +31,9 @@ class MovieDetailFragment : Fragment(), MovieDetailUserActionListener {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        val modelCheck = movieDetailVM.checkFavorite(arguments?.getParcelable<MovieModel>(VALUE_KEY) as MovieModel)
-        if(modelCheck){
+        val modelCheck =
+            movieDetailVM.checkFavorite(arguments?.getParcelable<MovieModel>(VALUE_KEY) as MovieModel)
+        if (modelCheck) {
             ivStar.setImageResource(R.drawable.ic_star_24_yellow)
         } else {
             ivStar.setImageResource(R.drawable.ic_star_24)
@@ -44,7 +43,7 @@ class MovieDetailFragment : Fragment(), MovieDetailUserActionListener {
     private var isStarred = false
     override fun addToFav(model: MovieModel) {
         val modelCheck = movieDetailVM.checkFavorite(model)
-        isStarred = if(!isStarred && !modelCheck){
+        isStarred = if (!isStarred && !modelCheck) {
             ivStar.setImageResource(R.drawable.ic_star_24_yellow)
             model.isFavorite = true
             movieDetailVM.add(model)

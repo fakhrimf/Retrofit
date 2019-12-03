@@ -7,8 +7,7 @@ import com.fakhrimf.retrofit.BR
 import com.fakhrimf.retrofit.databinding.FavoriteItemListBinding
 import com.fakhrimf.retrofit.model.FavoriteModel
 
-class FavoriteListAdapter(private val item: ArrayList<FavoriteModel>, private val favoriteUserActionListener: FavoriteUserActionListener) :
-    RecyclerView.Adapter<FavoriteListAdapter.Holder>() {
+class FavoriteListAdapter(private val item: ArrayList<FavoriteModel>, private val favoriteUserActionListener: FavoriteUserActionListener) : RecyclerView.Adapter<FavoriteListAdapter.Holder>() {
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): Holder {
         val inflater = LayoutInflater.from(p0.context)
         val binding = FavoriteItemListBinding.inflate(inflater, p0, false)
@@ -25,8 +24,7 @@ class FavoriteListAdapter(private val item: ArrayList<FavoriteModel>, private va
         return item.size
     }
 
-    inner class Holder(private val binding: FavoriteItemListBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    inner class Holder(private val binding: FavoriteItemListBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: FavoriteModel) {
             binding.setVariable(BR.vm, item)
             binding.executePendingBindings()

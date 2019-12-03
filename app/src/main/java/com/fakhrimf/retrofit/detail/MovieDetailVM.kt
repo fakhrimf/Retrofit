@@ -16,7 +16,8 @@ import java.util.*
 class MovieDetailVM(application: Application) : AndroidViewModel(application) {
 
     private fun setModel(movieModel: MovieModel): FavoriteModel {
-        return FavoriteModel(movieModel.id, movieModel.title, movieModel.overview, movieModel.posterPath, movieModel.backDropPath, movieModel.releaseDate, movieModel.vote, movieModel.isFavorite ?: false,movieModel.type)
+        return FavoriteModel(movieModel.id, movieModel.title, movieModel.overview, movieModel.posterPath, movieModel.backDropPath, movieModel.releaseDate, movieModel.vote, movieModel.isFavorite
+            ?: false, movieModel.type)
     }
 
     private fun cursorToArrayList(cursor: Cursor): ArrayList<FavoriteModel> {
@@ -67,12 +68,10 @@ class MovieDetailVM(application: Application) : AndroidViewModel(application) {
 
         if (result > 0) {
             movieModel.isFavorite = true
-            Toast.makeText(context, "${movieModel.title} " + context.getString(R.string.added_to_favorites), Toast.LENGTH_LONG)
-                .show()
+            Toast.makeText(context, "${movieModel.title} " + context.getString(R.string.added_to_favorites), Toast.LENGTH_LONG).show()
         } else {
             movieModel.isFavorite = true
-            Toast.makeText(context, context.getString(R.string.duplicate_constraint_error), Toast.LENGTH_LONG)
-                .show()
+            Toast.makeText(context, context.getString(R.string.duplicate_constraint_error), Toast.LENGTH_LONG).show()
         }
     }
 
@@ -84,16 +83,13 @@ class MovieDetailVM(application: Application) : AndroidViewModel(application) {
         val context = getApplication() as Context
         if (result > 0) {
             movieModel.isFavorite = false
-            Toast.makeText(context, "${movieModel.title} " + context.getString(R.string.removed_from_favorites), Toast.LENGTH_LONG)
-                .show()
+            Toast.makeText(context, "${movieModel.title} " + context.getString(R.string.removed_from_favorites), Toast.LENGTH_LONG).show()
         } else {
             val resultTwo = favoritesHelper.delete(favoriteModel.title + "")
             if (resultTwo > 0) {
-                Toast.makeText(getApplication(), "${movieModel.title} " + context.getString(R.string.removed_from_favorites), Toast.LENGTH_LONG)
-                    .show()
+                Toast.makeText(getApplication(), "${movieModel.title} " + context.getString(R.string.removed_from_favorites), Toast.LENGTH_LONG).show()
             } else {
-                Toast.makeText(getApplication(), context.getString(R.string.error_delete), Toast.LENGTH_LONG)
-                    .show()
+                Toast.makeText(getApplication(), context.getString(R.string.error_delete), Toast.LENGTH_LONG).show()
             }
         }
     }

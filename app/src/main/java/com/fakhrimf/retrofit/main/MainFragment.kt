@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -30,15 +29,12 @@ class MainFragment : Fragment(), MovieUserActionListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         setHasOptionsMenu(true)
         super.onCreate(savedInstanceState)
-        mainVM = ViewModelProvider(
-            this,
-            ViewModelProvider.AndroidViewModelFactory(activity!!.application)
-        ).get(MainVM::class.java)
+        mainVM =
+            ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory(activity!!.application)).get(MainVM::class.java)
         type = mainVM.getSharedPreferences()
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_main, container, false)
     }
 
@@ -95,11 +91,7 @@ class MainFragment : Fragment(), MovieUserActionListener {
         }
 //        mainVM.setList(requireContext(), lvMovie, this)
         if (!mainVM.verifyInternet(activity as Activity)) {
-            Toast.makeText(
-                requireContext(),
-                requireContext().getString(R.string.attention),
-                Toast.LENGTH_LONG
-            ).show()
+            Toast.makeText(requireContext(), requireContext().getString(R.string.attention), Toast.LENGTH_LONG).show()
         }
         srl.setOnRefreshListener {
             refresh()

@@ -44,15 +44,7 @@ class FavoritesHelper(context: Context) {
     }
 
     fun queryCall(): Cursor {
-        return db.query(
-            DB_TABLE,
-            null,
-            null,
-            null,
-            null,
-            null,
-            "${FavColumns.ID} ASC"
-        )
+        return db.query(DB_TABLE, null, null, null, null, null, "${FavColumns.ID} ASC")
     }
 
     @Throws(SQLException::class)

@@ -11,13 +11,15 @@ import retrofit2.http.Query
 interface ApiInterface {
     //For Movies
     @GET("movie/latest")
-    fun getLatestMovie(@Query("api_key") apiKey:String, @Query("language") language:String) : Call<MovieModel>
+    fun getLatestMovie(@Query("api_key") apiKey: String, @Query("language") language: String): Call<MovieModel>
+
     @GET("movie/popular")
-    fun getPopularMovie(@Query("api_key") apiKey:String, @Query("language") language:String) : Call<MovieResponse>
+    fun getPopularMovie(@Query("api_key") apiKey: String, @Query("language") language: String): Call<MovieResponse>
 
     //For Shows
     @GET("tv/latest")
-    fun getLatestShow(@Query("api_key") apiKey: String, @Query("language") language: String) : Call<ShowModel>
+    fun getLatestShow(@Query("api_key") apiKey: String, @Query("language") language: String): Call<ShowModel>
+
     @GET("tv/popular")
-    fun getPopularShow(@Query("api_key") apiKey: String, @Query("language") language: String) : Call<ShowResponse>
+    fun getPopularShow(@Query("api_key") apiKey: String, @Query("language") language: String): Call<ShowResponse>
 }

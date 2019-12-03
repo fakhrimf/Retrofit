@@ -23,7 +23,6 @@ import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.text.SimpleDateFormat
 import java.util.*
 
 class MainVM(application: Application) : AndroidViewModel(application) {
@@ -41,10 +40,7 @@ class MainVM(application: Application) : AndroidViewModel(application) {
         if (!isLoaded) {
             srl.isRefreshing = true
             recyclerView.apply {
-                animate()
-                    .alpha(TRANSPARENT_ALPHA)
-                    .setDuration(DURATION)
-                    .setListener(null)
+                animate().alpha(TRANSPARENT_ALPHA).setDuration(DURATION).setListener(null)
             }
             GlobalScope.launch(Dispatchers.IO) {
                 //Background Thread, fetching API data from https://themoviedb.org
@@ -60,10 +56,7 @@ class MainVM(application: Application) : AndroidViewModel(application) {
                         LinearLayoutManager(context)
                     else recyclerView.layoutManager = GridLayoutManager(context, 2)
                     recyclerView.apply {
-                        animate()
-                            .alpha(OPAQUE_ALPHA)
-                            .setDuration(DURATION)
-                            .setListener(null)
+                        animate().alpha(OPAQUE_ALPHA).setDuration(DURATION).setListener(null)
                     }
                     srl.isRefreshing = false
                 }
@@ -74,10 +67,8 @@ class MainVM(application: Application) : AndroidViewModel(application) {
                 LinearLayoutManager(context)
             else recyclerView.layoutManager = GridLayoutManager(context, 2)
             when (type) {
-                Type.LIST -> recyclerView.adapter =
-                    MovieListAdapter(moviesList.value!!, listener)
-                Type.CARD -> recyclerView.adapter =
-                    MovieCardAdapter(moviesList.value!!, listener)
+                Type.LIST -> recyclerView.adapter = MovieListAdapter(moviesList.value!!, listener)
+                Type.CARD -> recyclerView.adapter = MovieCardAdapter(moviesList.value!!, listener)
                 else -> recyclerView.adapter = MovieGridAdapter(moviesList.value!!, listener)
             }
         }
@@ -85,7 +76,7 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
     fun onRefresh(recyclerView: RecyclerView, listener: MovieUserActionListener, type: Type, srl: SwipeRefreshLayout) {
         isLoaded = false
-        setRecycler(recyclerView,listener,type,srl)
+        setRecycler(recyclerView, listener, type, srl)
     }
 
     private fun getPopularMovies(apiInterface: ApiInterface, recyclerView: RecyclerView, listener: MovieUserActionListener, type: Type) {
@@ -98,11 +89,7 @@ class MainVM(application: Application) : AndroidViewModel(application) {
         val call: Call<MovieResponse> = apiInterface.getPopularMovie(apiKey, locale)
         call.enqueue(object : Callback<MovieResponse> {
             override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
-                Toast.makeText(
-                    context,
-                    context.getString(R.string.error),
-                    Toast.LENGTH_LONG
-                ).show()
+                Toast.makeText(context, context.getString(R.string.error), Toast.LENGTH_LONG).show()
                 Log.d(TAG_ERROR, MOVIE_POPULAR_FAIL)
             }
 
@@ -122,21 +109,14 @@ class MainVM(application: Application) : AndroidViewModel(application) {
                     }
 
                     when (type) {
-                        Type.LIST -> recyclerView.adapter =
-                            MovieListAdapter(it, listener)
-                        Type.CARD -> recyclerView.adapter =
-                            MovieCardAdapter(it, listener)
+                        Type.LIST -> recyclerView.adapter = MovieListAdapter(it, listener)
+                        Type.CARD -> recyclerView.adapter = MovieCardAdapter(it, listener)
                         else -> recyclerView.adapter = MovieGridAdapter(it, listener)
                     }
                 }
                 isLoaded = true
             }
         })
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        Toast.makeText(getApplication(), "Viewmodel main cleared", Toast.LENGTH_LONG).show()
     }
 
     fun verifyInternet(activity: Activity): Boolean {

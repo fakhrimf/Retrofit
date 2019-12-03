@@ -20,9 +20,7 @@ object BindingAdapterUtils : BaseObservable() {
         if (resUrl != null) {
             Picasso.get().load(baseUrl + resUrl).into(imageView)
         } else {
-            Picasso.get()
-                .load("https://www.materiaimpar.com/wp-content/uploads/2015/07/import_placeholder.png")
-                .into(imageView)
+            Picasso.get().load("https://www.materiaimpar.com/wp-content/uploads/2015/07/import_placeholder.png").into(imageView)
         }
     }
 

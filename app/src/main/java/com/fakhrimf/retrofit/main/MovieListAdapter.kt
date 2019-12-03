@@ -7,10 +7,7 @@ import com.fakhrimf.retrofit.BR
 import com.fakhrimf.retrofit.databinding.MovieItemListBinding
 import com.fakhrimf.retrofit.model.MovieModel
 
-class MovieListAdapter(
-    private val item: ArrayList<MovieModel>,
-    private val movieUserActionListener: MovieUserActionListener
-) : RecyclerView.Adapter<MovieListAdapter.Holder>()/*, StaffUserActionListener*/ {
+class MovieListAdapter(private val item: ArrayList<MovieModel>, private val movieUserActionListener: MovieUserActionListener) : RecyclerView.Adapter<MovieListAdapter.Holder>()/*, StaffUserActionListener*/ {
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): Holder {
         val inflater = LayoutInflater.from(p0.context)
         val binding = MovieItemListBinding.inflate(inflater, p0, false)

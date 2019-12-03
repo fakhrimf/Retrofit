@@ -2,11 +2,8 @@ package com.fakhrimf.retrofit.favorite
 
 import android.app.Application
 import android.database.Cursor
-import android.util.Log
 import android.view.View
 import android.widget.TextView
-import android.widget.Toast
-import androidx.core.view.isVisible
 import androidx.lifecycle.AndroidViewModel
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -47,10 +44,7 @@ class FavoriteVM(application: Application) : AndroidViewModel(application) {
             info.visibility = View.GONE
             srl.isRefreshing = true
             recyclerView.apply {
-                animate()
-                    .alpha(TRANSPARENT_ALPHA)
-                    .setDuration(DURATION)
-                    .setListener(null)
+                animate().alpha(TRANSPARENT_ALPHA).setDuration(DURATION).setListener(null)
             }
             GlobalScope.launch(Dispatchers.IO) {
                 val cursor = FavoritesHelper(getApplication()).queryCall()
@@ -61,10 +55,7 @@ class FavoriteVM(application: Application) : AndroidViewModel(application) {
                     recyclerView.layoutManager = LinearLayoutManager(getApplication())
                     isLoaded = true
                     recyclerView.apply {
-                        animate()
-                            .alpha(OPAQUE_ALPHA)
-                            .setDuration(DURATION)
-                            .setListener(null)
+                        animate().alpha(OPAQUE_ALPHA).setDuration(DURATION).setListener(null)
                     }
                     if (favoriteList.isEmpty()) {
                         info.visibility = View.VISIBLE

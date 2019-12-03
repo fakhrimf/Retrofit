@@ -19,7 +19,6 @@ import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.text.SimpleDateFormat
 import java.util.*
 
 class ShowVM(application: Application) : AndroidViewModel(application) {
@@ -27,19 +26,11 @@ class ShowVM(application: Application) : AndroidViewModel(application) {
     private val context = getApplication() as Context
     private var isLoaded = false
 
-    override fun onCleared() {
-        super.onCleared()
-        Toast.makeText(getApplication(), "Viewmodel show cleared", Toast.LENGTH_LONG).show()
-    }
-
     fun setRecycler(recyclerView: RecyclerView, listener: ShowUserActionListener, type: Type, srl: SwipeRefreshLayout) {
         if (!isLoaded) {
             srl.isRefreshing = true
             recyclerView.apply {
-                animate()
-                    .alpha(TRANSPARENT_ALPHA)
-                    .setDuration(DURATION)
-                    .setListener(null)
+                animate().alpha(TRANSPARENT_ALPHA).setDuration(DURATION).setListener(null)
             }
             GlobalScope.launch(Dispatchers.IO) {
                 //Background Thread
@@ -54,10 +45,7 @@ class ShowVM(application: Application) : AndroidViewModel(application) {
                         LinearLayoutManager(getApplication())
                     else recyclerView.layoutManager = GridLayoutManager(getApplication(), 2)
                     recyclerView.apply {
-                        animate()
-                            .alpha(OPAQUE_ALPHA)
-                            .setDuration(DURATION)
-                            .setListener(null)
+                        animate().alpha(OPAQUE_ALPHA).setDuration(DURATION).setListener(null)
                     }
                     srl.isRefreshing = false
                 }
@@ -68,10 +56,8 @@ class ShowVM(application: Application) : AndroidViewModel(application) {
             else recyclerView.layoutManager = GridLayoutManager(getApplication(), 2)
             showList?.let {
                 when (type) {
-                    Type.LIST -> recyclerView.adapter =
-                        ShowListAdapter(it, listener)
-                    Type.CARD -> recyclerView.adapter =
-                        ShowCardAdapter(it, listener)
+                    Type.LIST -> recyclerView.adapter = ShowListAdapter(it, listener)
+                    Type.CARD -> recyclerView.adapter = ShowCardAdapter(it, listener)
                     else -> recyclerView.adapter = ShowGridAdapter(it, listener)
                 }
             }
@@ -93,11 +79,7 @@ class ShowVM(application: Application) : AndroidViewModel(application) {
         val call: Call<ShowResponse> = apiInterface.getPopularShow(apiKey, locale)
         call.enqueue(object : Callback<ShowResponse> {
             override fun onFailure(call: Call<ShowResponse>, t: Throwable) {
-                Toast.makeText(
-                    context,
-                    context.getString(R.string.error),
-                    Toast.LENGTH_LONG
-                ).show()
+                Toast.makeText(context, context.getString(R.string.error), Toast.LENGTH_LONG).show()
                 Log.d(TAG_ERROR, SHOW_POPULAR_FAIL)
             }
 
@@ -110,10 +92,8 @@ class ShowVM(application: Application) : AndroidViewModel(application) {
                     }
 
                     when (type) {
-                        Type.CARD -> recyclerView.adapter =
-                            ShowCardAdapter(it, listener)
-                        Type.LIST -> recyclerView.adapter =
-                            ShowListAdapter(it, listener)
+                        Type.CARD -> recyclerView.adapter = ShowCardAdapter(it, listener)
+                        Type.LIST -> recyclerView.adapter = ShowListAdapter(it, listener)
                         else -> recyclerView.adapter = ShowGridAdapter(it, listener)
                     }
                 }
@@ -133,9 +113,9 @@ class ShowVM(application: Application) : AndroidViewModel(application) {
             }
 
             override fun onResponse(call: Call<ShowModel>, response: Response<ShowModel>) {
-//                val title = response.body()!!.title
-//                val path = response.body()!!.posterPath
-//                val overview = response.body()!!.overview
+                //                val title = response.body()!!.title
+                //                val path = response.body()!!.posterPath
+                //                val overview = response.body()!!.overview
             }
 
         })

@@ -1,7 +1,7 @@
 package com.fakhrimf.retrofit
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.fakhrimf.retrofit.detail.FavoriteDetailFragment
 import com.fakhrimf.retrofit.model.FavoriteModel
 import com.fakhrimf.retrofit.utils.VALUE_KEY

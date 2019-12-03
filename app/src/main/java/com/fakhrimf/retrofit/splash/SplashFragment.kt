@@ -13,14 +13,12 @@ import com.fakhrimf.retrofit.R
 class SplashFragment : Fragment() {
     private val mHandler = Handler()
     private val runnable = Runnable {
-        startActivity(Intent(activity,MainActivity::class.java))
+        startActivity(Intent(activity, MainActivity::class.java))
         activity!!.finish()
     }
 
 
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_splash, container, false)
     }

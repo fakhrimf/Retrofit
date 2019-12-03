@@ -23,15 +23,13 @@ class ShowFragment : Fragment(), ShowUserActionListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         setHasOptionsMenu(true)
         super.onCreate(savedInstanceState)
-        showVM = ViewModelProvider(
-            this,
-            ViewModelProvider.AndroidViewModelFactory(activity!!.application) //Double bang call is used because AndroidViewModelFactory needed application, not application?
-        ).get(ShowVM::class.java)
+        showVM =
+            ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory(activity!!.application) //Double bang call is used because AndroidViewModelFactory needed application, not application?
+            ).get(ShowVM::class.java)
         type = showVM.getSharedPreferences()
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_show, container, false)
     }
 
