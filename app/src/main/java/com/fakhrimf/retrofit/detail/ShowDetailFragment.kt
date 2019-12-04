@@ -32,7 +32,7 @@ class ShowDetailFragment : Fragment(), ShowDetailUserActionListener {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         val modelCheck =
-            showDetailVM.checkFavorite(arguments?.getParcelable<ShowModel>(VALUE_KEY) as ShowModel)
+            arguments?.getParcelable<ShowModel>(VALUE_KEY)?.let { showDetailVM.checkFavorite(it) } ?: false
         if (modelCheck) {
             ivStar.setImageResource(R.drawable.ic_star_24_yellow)
         } else {
