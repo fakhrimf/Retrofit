@@ -32,7 +32,7 @@ class FavoriteDetailFragment : Fragment(), FavoriteDetailUserActionListener {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         val modelCheck =
-            favoriteDetailVM.checkFavorite(arguments?.getParcelable<FavoriteModel>(VALUE_KEY) as FavoriteModel)
+            arguments?.getParcelable<FavoriteModel>(VALUE_KEY)?.let { favoriteDetailVM.checkFavorite(it) } ?: false
         if (modelCheck) {
             ivStar.setImageResource(R.drawable.ic_star_24_yellow)
         } else {

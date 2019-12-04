@@ -32,7 +32,7 @@ class MovieDetailFragment : Fragment(), MovieDetailUserActionListener {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         val modelCheck =
-            movieDetailVM.checkFavorite(arguments?.getParcelable<MovieModel>(VALUE_KEY) as MovieModel)
+            arguments?.getParcelable<MovieModel>(VALUE_KEY)?.let { movieDetailVM.checkFavorite(it) } ?: false
         if (modelCheck) {
             ivStar.setImageResource(R.drawable.ic_star_24_yellow)
         } else {
