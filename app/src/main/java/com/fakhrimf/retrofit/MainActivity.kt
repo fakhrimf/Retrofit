@@ -1,11 +1,11 @@
 package com.fakhrimf.retrofit
 
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.fakhrimf.retrofit.utils.SectionAdapter
+import androidx.navigation.findNavController
+import androidx.navigation.ui.setupWithNavController
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -13,11 +13,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val sectionAdapter = SectionAdapter(this, supportFragmentManager)
-        viewPager.adapter = sectionAdapter
-        tabLayout.setupWithViewPager(viewPager)
         supportActionBar?.elevation = 0f
-        tabLayout.background = ColorDrawable(1)
+        bottomNavMain.setupWithNavController(findNavController(R.id.homeFragment))
     }
 
     private val mHandler = Handler()

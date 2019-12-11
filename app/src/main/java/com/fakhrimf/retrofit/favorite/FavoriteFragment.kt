@@ -39,7 +39,7 @@ class FavoriteFragment : Fragment(), FavoriteUserActionListener {
         if (!favoriteVM.getIsLoaded()) {
             tvInfo.visibility = View.GONE
             srl.isRefreshing = true
-            rvFavorite.apply {
+            rvFavorite?.apply {
                 animate().alpha(TRANSPARENT_ALPHA).setDuration(DURATION).setListener(null)
             }
             job = GlobalScope.launch(Dispatchers.IO) {
@@ -47,22 +47,22 @@ class FavoriteFragment : Fragment(), FavoriteUserActionListener {
                 favoriteVM.favoriteList = favoriteVM.cursorToArrayList(cursor)
                 delay(2000)
                 withContext(Dispatchers.Main) {
-                    rvFavorite.adapter =
+                    rvFavorite?.adapter =
                         FavoriteListAdapter(favoriteVM.favoriteList, this@FavoriteFragment)
-                    rvFavorite.layoutManager = LinearLayoutManager(requireContext())
+                    rvFavorite?.layoutManager = LinearLayoutManager(requireContext())
                     favoriteVM.setIsLoaded(true)
-                    rvFavorite.apply {
+                    rvFavorite?.apply {
                         animate().alpha(OPAQUE_ALPHA).setDuration(DURATION).setListener(null)
                     }
                     if (favoriteVM.favoriteList.isEmpty()) {
                         tvInfo.visibility = View.VISIBLE
                     }
-                    srl.isRefreshing = false
+                    srl?.isRefreshing = false
                 }
             }
         } else {
-            rvFavorite.layoutManager = LinearLayoutManager(requireContext())
-            rvFavorite.adapter = FavoriteListAdapter(favoriteVM.favoriteList, this)
+            rvFavorite?.layoutManager = LinearLayoutManager(requireContext())
+            rvFavorite?.adapter = FavoriteListAdapter(favoriteVM.favoriteList, this)
             if (favoriteVM.favoriteList.isEmpty()) {
                 tvInfo.visibility = View.VISIBLE
             }

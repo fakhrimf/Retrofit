@@ -1,4 +1,4 @@
-package com.fakhrimf.retrofit.main
+package com.fakhrimf.retrofit.movie
 
 import com.fakhrimf.retrofit.model.MovieModel
 

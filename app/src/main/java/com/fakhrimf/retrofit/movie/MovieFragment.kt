@@ -1,4 +1,4 @@
-package com.fakhrimf.retrofit.main
+package com.fakhrimf.retrofit.movie
 
 import android.content.Intent
 import android.os.Bundle
@@ -15,12 +15,12 @@ import com.fakhrimf.retrofit.model.MovieModel
 import com.fakhrimf.retrofit.utils.*
 import com.fakhrimf.retrofit.utils.source.remote.ApiClient
 import com.fakhrimf.retrofit.utils.source.remote.ApiInterface
-import kotlinx.android.synthetic.main.fragment_main.*
+import kotlinx.android.synthetic.main.fragment_movie.*
 import kotlinx.coroutines.*
 
-class MainFragment : Fragment(), MovieUserActionListener {
+class MovieFragment : Fragment(), MovieUserActionListener {
     private lateinit var type: Type
-    private lateinit var mainVM: MainVM
+    private lateinit var movieVM: MovieVM
     private lateinit var job: Job
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -31,13 +31,13 @@ class MainFragment : Fragment(), MovieUserActionListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         setHasOptionsMenu(true)
         super.onCreate(savedInstanceState)
-        mainVM =
-            ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory(activity!!.application)).get(MainVM::class.java)
-        type = mainVM.getSharedPreferences()
+        movieVM =
+            ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory(activity!!.application)).get(MovieVM::class.java)
+        type = movieVM.getSharedPreferences()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_main, container, false)
+        return inflater.inflate(R.layout.fragment_movie, container, false)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -46,10 +46,10 @@ class MainFragment : Fragment(), MovieUserActionListener {
     }
 
     private fun setRecycler(type: Type) {
-        mainVM.setSharedPreferences(type)
-        if (!mainVM.getIsLoaded()) {
+        movieVM.setSharedPreferences(type)
+        if (!movieVM.getIsLoaded()) {
             srl.isRefreshing = true
-            rvMovie.apply {
+            rvMovie?.apply {
                 animate().alpha(TRANSPARENT_ALPHA).setDuration(DURATION).setListener(null)
             }
             val io = Dispatchers.IO
@@ -57,56 +57,54 @@ class MainFragment : Fragment(), MovieUserActionListener {
             job = GlobalScope.launch(io) {
                 //Background Thread, fetching API data from https://themoviedb.org
                 val apiInterface = ApiClient.getClient().create(ApiInterface::class.java)
-                mainVM.getPopularMovies(apiInterface)
-                mainVM.getLatestMovies(apiInterface)
+                movieVM.getPopularMovies(apiInterface)
+                movieVM.getLatestMovies(apiInterface)
                 delay(2000)
 
                 //Main Thread
-                if (activity?.isDestroyed != true) {
-                    withContext(main) {
-                        if (type == Type.LIST || type == Type.CARD) rvMovie.layoutManager =
-                            LinearLayoutManager(context)
-                        else rvMovie.layoutManager = GridLayoutManager(context, 2)
-                        mainVM.moviesList.value?.let {
-                            when (type) {
-                                Type.LIST -> rvMovie.adapter =
-                                    MovieListAdapter(it, this@MainFragment)
-                                Type.CARD -> rvMovie.adapter =
-                                    MovieCardAdapter(it, this@MainFragment)
-                                else -> rvMovie.adapter = MovieGridAdapter(it, this@MainFragment)
-                            }
+                withContext(main) {
+                    if (type == Type.LIST || type == Type.CARD) rvMovie?.layoutManager =
+                        LinearLayoutManager(context)
+                    else rvMovie?.layoutManager = GridLayoutManager(context, 2)
+                    movieVM.moviesList.value?.let {
+                        when (type) {
+                            Type.LIST -> rvMovie?.adapter =
+                                MovieListAdapter(it, this@MovieFragment)
+                            Type.CARD -> rvMovie?.adapter =
+                                MovieCardAdapter(it, this@MovieFragment)
+                            else -> rvMovie?.adapter = MovieGridAdapter(it, this@MovieFragment)
                         }
-                        rvMovie.apply {
-                            animate().alpha(OPAQUE_ALPHA).setDuration(DURATION).setListener(null)
-                        }
-                        srl.isRefreshing = false
                     }
+                    rvMovie?.apply {
+                        animate().alpha(OPAQUE_ALPHA).setDuration(DURATION).setListener(null)
+                    }
+                    srl?.isRefreshing = false
                 }
             }
-        } else if (mainVM.getIsLoaded()) {
-            mainVM.moviesList.value?.let {
+        } else if (movieVM.getIsLoaded()) {
+            movieVM.moviesList.value?.let {
                 when (type) {
-                    Type.LIST -> rvMovie.adapter = MovieListAdapter(it, this@MainFragment)
-                    Type.CARD -> rvMovie.adapter = MovieCardAdapter(it, this@MainFragment)
-                    else -> rvMovie.adapter = MovieGridAdapter(it, this@MainFragment)
+                    Type.LIST -> rvMovie?.adapter = MovieListAdapter(it, this@MovieFragment)
+                    Type.CARD -> rvMovie?.adapter = MovieCardAdapter(it, this@MovieFragment)
+                    else -> rvMovie?.adapter = MovieGridAdapter(it, this@MovieFragment)
                 }
             }
-            if (type == Type.LIST || type == Type.CARD) rvMovie.layoutManager =
+            if (type == Type.LIST || type == Type.CARD) rvMovie?.layoutManager =
                 LinearLayoutManager(context)
-            else rvMovie.layoutManager = GridLayoutManager(context, 2)
+            else rvMovie?.layoutManager = GridLayoutManager(context, 2)
         }
         this.type = type
     }
 
     private fun refresh() {
         GlobalScope.launch(Dispatchers.IO) {
-            mainVM.setIsLoaded(false)
+            movieVM.setIsLoaded(false)
             delay(50)
             withContext(Dispatchers.Main) {
                 setRecycler(type)
             }
         }
-        mainVM.setSharedPreferences(type)
+        movieVM.setSharedPreferences(type)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -138,7 +136,7 @@ class MainFragment : Fragment(), MovieUserActionListener {
     }
 
     override fun onPause() {
-        if(::job.isInitialized){
+        if (::job.isInitialized) {
             job.cancel("User closed", null)
         }
         super.onPause()
