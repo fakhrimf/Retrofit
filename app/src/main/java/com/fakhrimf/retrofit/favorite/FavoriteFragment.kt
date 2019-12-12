@@ -23,6 +23,9 @@ import kotlinx.coroutines.*
 class FavoriteFragment : Fragment(), FavoriteUserActionListener {
     private lateinit var favoriteVM: FavoriteVM
     private lateinit var job: Job
+    val adapter by lazy {
+        FavoriteListAdapter(favoriteVM.favoriteList, this@FavoriteFragment)
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
@@ -49,8 +52,7 @@ class FavoriteFragment : Fragment(), FavoriteUserActionListener {
                 favoriteVM.favoriteList = favoriteVM.cursorToArrayList(cursor)
                 delay(2000)
                 withContext(Dispatchers.Main) {
-                    rvFavorite?.adapter =
-                        FavoriteListAdapter(favoriteVM.favoriteList, this@FavoriteFragment)
+                    rvFavorite?.adapter = adapter
                     rvFavorite?.layoutManager = LinearLayoutManager(requireContext())
                     favoriteVM.setIsLoaded(true)
                     rvFavorite?.apply {
@@ -64,7 +66,7 @@ class FavoriteFragment : Fragment(), FavoriteUserActionListener {
             }
         } else {
             rvFavorite?.layoutManager = LinearLayoutManager(requireContext())
-            rvFavorite?.adapter = FavoriteListAdapter(favoriteVM.favoriteList, this)
+            rvFavorite?.adapter = adapter
             if (favoriteVM.favoriteList.isEmpty()) {
                 tvInfo.visibility = View.VISIBLE
             }
@@ -101,8 +103,6 @@ class FavoriteFragment : Fragment(), FavoriteUserActionListener {
                 true
             }
             else -> {
-                val searchView = item.actionView as SearchView
-                searchView.queryHint = getString(R.string.search_query_hint_favorites)
                 true
             }
         }
@@ -111,17 +111,33 @@ class FavoriteFragment : Fragment(), FavoriteUserActionListener {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_favorite, menu)
         val menuItem = menu.findItem(R.id.search)
+        val searchView = menuItem.actionView as SearchView
+        searchView.queryHint = getString(R.string.search_query_hint_favorites)
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                adapter.filter.filter(query)
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                adapter.filter.filter(newText)
+                if (newText?.isEmpty() == true) adapter.resetList()
+                return false
+            }
+        })
         menuItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+            val bottomNavMain = activity?.findViewById<View>(R.id.bottomNavMain)
             override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
                 setItemVisibility(menu, false)
+                bottomNavMain?.visibility = View.GONE
                 return true
             }
 
             override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
                 setItemVisibility(menu, true)
+                bottomNavMain?.visibility = View.VISIBLE
                 return true
             }
-
         })
         super.onCreateOptionsMenu(menu, inflater)
     }

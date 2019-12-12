@@ -28,8 +28,8 @@
         android:background="@color/gray"
         android:foreground="?attr/selectableItemBackground"
         app:itemBackground="@color/gray"
-        app:itemIconTint="@android:color/white"
-        app:itemTextColor="@android:color/white"
+        app:itemIconTint="@color/bnv_item"
+        app:itemTextColor="@color/bnv_item"
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/menu_bottom" />
 

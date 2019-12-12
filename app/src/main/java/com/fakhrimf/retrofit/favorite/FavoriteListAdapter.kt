@@ -12,7 +12,14 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class FavoriteListAdapter(private val item: ArrayList<FavoriteModel>, private val favoriteUserActionListener: FavoriteUserActionListener) : RecyclerView.Adapter<FavoriteListAdapter.Holder>(), Filterable {
-    private val filterList = ArrayList<FavoriteModel>(item)
+    private val filterList by lazy {
+        ArrayList<FavoriteModel>(item)
+    }
+
+    fun resetList() {
+        filterList.clear()
+        filterList.addAll(item)
+    }
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): Holder {
         val inflater = LayoutInflater.from(p0.context)
@@ -23,11 +30,11 @@ class FavoriteListAdapter(private val item: ArrayList<FavoriteModel>, private va
     }
 
     override fun onBindViewHolder(p0: Holder, p1: Int) {
-        p0.bind(item[p1])
+        p0.bind(filterList[p1])
     }
 
     override fun getItemCount(): Int {
-        return item.size
+        return filterList.size
     }
 
     inner class Holder(private val binding: FavoriteItemListBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -47,13 +54,12 @@ class FavoriteListAdapter(private val item: ArrayList<FavoriteModel>, private va
             if (constraint == null || constraint.isEmpty()) {
                 filteredList.addAll(filterList)
             } else {
-
                 val filterPattern = constraint
                     .toString()
                     .toLowerCase(Locale.getDefault())
                     .trim()
 
-                for (it in filterList) {
+                for (it in item) {
                     if (it.title?.toLowerCase(Locale.getDefault())?.contains(filterPattern) == true) {
                         filteredList.add(it)
                     }
