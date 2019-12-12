@@ -11,6 +11,11 @@
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" />
     <fragment
+        android:id="@+id/searchNav"
+        android:name="com.fakhrimf.retrofit.search.SearchFragment"
+        android:label="fragment_search"
+        tools:layout="@layout/fragment_search" />
+    <fragment
         android:id="@+id/favoriteNav"
         android:name="com.fakhrimf.retrofit.favorite.FavoriteFragment"
         android:label="fragment_favorite"
