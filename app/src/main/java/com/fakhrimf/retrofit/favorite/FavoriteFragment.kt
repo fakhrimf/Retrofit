@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
 import android.view.*
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,6 +31,7 @@ class FavoriteFragment : Fragment(), FavoriteUserActionListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
         favoriteVM =
             ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory(activity!!.application)).get(FavoriteVM::class.java)
     }
@@ -94,8 +96,13 @@ class FavoriteFragment : Fragment(), FavoriteUserActionListener {
                 startActivity(Intent(requireContext(), AboutActivity::class.java))
                 true
             }
-            else -> {
+            R.id.language -> {
                 startActivity(Intent(Settings.ACTION_LOCALE_SETTINGS))
+                true
+            }
+            else -> {
+                val searchView = item.actionView as SearchView
+                searchView.queryHint = getString(R.string.search_query_hint_favorites)
                 true
             }
         }
@@ -103,7 +110,28 @@ class FavoriteFragment : Fragment(), FavoriteUserActionListener {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_favorite, menu)
+        val menuItem = menu.findItem(R.id.search)
+        menuItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+            override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+                setItemVisibility(menu, false)
+                return true
+            }
+
+            override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+                setItemVisibility(menu, true)
+                return true
+            }
+
+        })
         super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    private fun setItemVisibility(menu: Menu, visible: Boolean) {
+        for (i in 0 until menu.size()) {
+            val item = menu.getItem(i)
+            if (item != menu.findItem(R.id.search)) item.isVisible = visible
+            activity?.invalidateOptionsMenu()
+        }
     }
 
     override fun onClickItem(favoriteModel: FavoriteModel) {
@@ -113,7 +141,7 @@ class FavoriteFragment : Fragment(), FavoriteUserActionListener {
     }
 
     override fun onPause() {
-        if(::job.isInitialized){
+        if (::job.isInitialized) {
             job.cancel("User closed", null)
         }
         super.onPause()

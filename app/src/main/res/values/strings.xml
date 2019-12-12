@@ -37,4 +37,6 @@
     <string name="removed_from_favorites">Removed from favorites</string>
     <string name="error_delete">Data unavailable in favorites</string>
     <string name="title_popular">Popular</string>
+    <string name="search">Search</string>
+    <string name="search_query_hint_favorites">Search in favorites…</string>
 </resources>
