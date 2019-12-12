@@ -7,7 +7,7 @@
 
         <variable
             name="listener"
-            type="com.fakhrimf.retrofit.main.MovieUserActionListener" />
+            type="com.fakhrimf.retrofit.movie.MovieUserActionListener" />
 
         <variable
             name="vm"

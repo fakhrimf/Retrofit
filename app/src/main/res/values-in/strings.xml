@@ -35,4 +35,7 @@
     <string name="added_to_favorites">Ditambahkan ke favorit</string>
     <string name="removed_from_favorites">Dihapus dari favorit</string>
     <string name="error_delete">Tidak ada data di favorit</string>
+    <string name="title_popular">Populer</string>
+    <string name="search">Cari</string>
+    <string name="search_query_hint_favorites">Cari di favorit…</string>
 </resources>

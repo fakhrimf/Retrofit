@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.fakhrimf.retrofit.AboutActivity
 import com.fakhrimf.retrofit.R
 import com.fakhrimf.retrofit.ShowDetailActivity
@@ -45,45 +46,46 @@ class ShowFragment : Fragment(), ShowUserActionListener {
         showVM.setSharedPreferences(type)
         if (!showVM.getIsLoaded()) {
             srl.isRefreshing = true
-            rvShow.apply {
+            rvShow?.apply {
                 animate().alpha(TRANSPARENT_ALPHA).setDuration(DURATION).setListener(null)
             }
             job = GlobalScope.launch(Dispatchers.IO) {
                 //Background Thread, fetching API data from https://themoviedb.org
                 val apiInterface = ApiClient.getClient().create(ApiInterface::class.java)
+                val rvShow = view?.findViewById<RecyclerView>(R.id.rvShow)
                 showVM.getPopularShow(apiInterface)
                 showVM.getLatestShow(apiInterface)
                 delay(2000)
 
                 //Main Thread
                 withContext(Dispatchers.Main) {
-                    if (type == Type.LIST || type == Type.CARD) rvShow.layoutManager =
+                    if (type == Type.LIST || type == Type.CARD) rvShow?.layoutManager =
                         LinearLayoutManager(context)
-                    else rvShow.layoutManager = GridLayoutManager(context, 2)
+                    else rvShow?.layoutManager = GridLayoutManager(context, 2)
                     showVM.showList?.let {
                         when (type) {
-                            Type.LIST -> rvShow.adapter = ShowListAdapter(it, this@ShowFragment)
-                            Type.CARD -> rvShow.adapter = ShowCardAdapter(it, this@ShowFragment)
-                            else -> rvShow.adapter = ShowGridAdapter(it, this@ShowFragment)
+                            Type.LIST -> rvShow?.adapter = ShowListAdapter(it, this@ShowFragment)
+                            Type.CARD -> rvShow?.adapter = ShowCardAdapter(it, this@ShowFragment)
+                            else -> rvShow?.adapter = ShowGridAdapter(it, this@ShowFragment)
                         }
                     }
-                    rvShow.apply {
+                    rvShow?.apply {
                         animate().alpha(OPAQUE_ALPHA).setDuration(DURATION).setListener(null)
                     }
-                    srl.isRefreshing = false
+                    srl?.isRefreshing = false
                 }
             }
         } else if (showVM.getIsLoaded()) {
             showVM.showList?.let {
                 when (type) {
-                    Type.LIST -> rvShow.adapter = ShowListAdapter(it, this@ShowFragment)
-                    Type.CARD -> rvShow.adapter = ShowCardAdapter(it, this@ShowFragment)
-                    else -> rvShow.adapter = ShowGridAdapter(it, this@ShowFragment)
+                    Type.LIST -> rvShow?.adapter = ShowListAdapter(it, this@ShowFragment)
+                    Type.CARD -> rvShow?.adapter = ShowCardAdapter(it, this@ShowFragment)
+                    else -> rvShow?.adapter = ShowGridAdapter(it, this@ShowFragment)
                 }
             }
-            if (type == Type.LIST || type == Type.CARD) rvShow.layoutManager =
+            if (type == Type.LIST || type == Type.CARD) rvShow?.layoutManager =
                 LinearLayoutManager(context)
-            else rvShow.layoutManager = GridLayoutManager(context, 2)
+            else rvShow?.layoutManager = GridLayoutManager(context, 2)
         }
         this.type = type
     }

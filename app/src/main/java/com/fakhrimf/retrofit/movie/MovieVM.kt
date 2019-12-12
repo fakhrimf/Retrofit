@@ -1,4 +1,4 @@
-package com.fakhrimf.retrofit.main
+package com.fakhrimf.retrofit.movie
 
 import android.app.Application
 import android.content.Context
@@ -17,7 +17,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.util.*
 
-class MainVM(application: Application) : AndroidViewModel(application) {
+class MovieVM(application: Application) : AndroidViewModel(application) {
     val context = getApplication() as Context
     private var isLoaded = false /*Check whether the recyclerview is loaded or not*/
     val moviesList: MutableLiveData<ArrayList<MovieModel>> by lazy {
@@ -51,10 +51,6 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
             override fun onResponse(call: Call<MovieResponse>, response: Response<MovieResponse>) {
                 moviesList.value = response.body()?.results
-                if (moviesList.value == null) {
-                    Log.d(TAG_ERROR, "onResponse: Response is null")
-                    throw Exception("onResponse: Response is null, please retry")
-                }
                 moviesList.value?.let {
                     val context = getApplication() as Context
                     for (i in 0 until it.size) {
