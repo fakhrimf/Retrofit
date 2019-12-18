@@ -38,4 +38,5 @@
     <string name="title_popular">Populer</string>
     <string name="search">Cari</string>
     <string name="search_query_hint_favorites">Cari di favorit…</string>
+    <string name="my_favorites">Favorit Saya</string>
 </resources>
