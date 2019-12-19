@@ -1,9 +1,9 @@
-package com.fakhrimf.retrofit.utils.source.local
+package com.fakhrimf.cinemalistfavorites.utils.source.local
 
 import android.net.Uri
 import android.provider.BaseColumns
-import com.fakhrimf.retrofit.utils.AUTHORITY
-import com.fakhrimf.retrofit.utils.CONTENT_SCHEME
+import com.fakhrimf.cinemalistfavorites.utils.AUTHORITY
+import com.fakhrimf.cinemalistfavorites.utils.CONTENT_SCHEME
 
 internal class DatabaseContract {
     internal class FavColumns : BaseColumns {

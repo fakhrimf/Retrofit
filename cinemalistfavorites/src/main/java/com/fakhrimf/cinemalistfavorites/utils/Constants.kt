@@ -1,6 +1,4 @@
-package com.fakhrimf.retrofit.utils
-
-import com.fakhrimf.retrofit.BuildConfig
+package com.fakhrimf.cinemalistfavorites.utils
 
 const val LOCALE_ID = "id"
 const val LOCALE_EN = "en"
@@ -14,7 +12,6 @@ const val TRANSPARENT_ALPHA = 0.0F
 const val OPAQUE_ALPHA = 1.0F
 const val VALUE_KEY = "model"
 const val TYPE_KEY = "type"
-const val API_KEY = BuildConfig.API_KEY
 const val PREFERENCE_MOVIE_TYPE_KEY = "type_movie"
 const val PREFERENCE_SHOW_TYPE_KEY = "type_show"
 const val PREFERENCE_FIRST_RUN_KEY = "first_run"
