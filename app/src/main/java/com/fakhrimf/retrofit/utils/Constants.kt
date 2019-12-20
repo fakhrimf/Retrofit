@@ -22,6 +22,14 @@ const val PREFERENCE_KEY = "type_preference"
 const val VALUE_LIST = "list"
 const val VALUE_CARD = "card"
 const val VALUE_GRID = "grid"
+const val OPEN_DETAIL_ACTION = "com.fakhrimf.retrofit.OPEN_DETAIL_ACTION"
+const val PENDING_INTENT_KEY = 34
+const val WIDGET_INTENT_KEY = "com.fakhrimf.retrofit.WIDGET_INTENT"
+const val WIDGET_REFRESH = "KEY_WIDGET_REFRESH"
+const val CONTENT_SCHEME = "content"
+const val AUTHORITY = "com.fakhrimf.retrofit"
+const val FAVORITE_PROVIDER = 64
+const val FAVORITE_PROVIDER_ID = 73
 
 enum class Type {
     LIST, CARD, GRID

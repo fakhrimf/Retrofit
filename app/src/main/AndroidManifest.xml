@@ -4,6 +4,8 @@
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <permission android:name="com.fakhrimf.retrofit.READ_DATABASE" android:protectionLevel="normal"/>
+    <permission android:name="com.fakhrimf.retrofit.WRITE_DATABASE" android:protectionLevel="normal"/>
 
     <application
         android:allowBackup="true"
@@ -13,13 +15,31 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <provider
+            android:name=".utils.provider.FavoriteProvider"
+            android:authorities="com.fakhrimf.retrofit"
+            android:enabled="true"
+            android:exported="true"
+            android:readPermission="com.fakhrimf.retrofit.READ_DATABASE"
+            android:writePermission="com.fakhrimf.retrofit.WRITE_DATABASE"/>
+
+        <receiver android:name=".widgets.FavoriteStacks">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/favorite_stacks_info" />
+        </receiver>
+
         <activity
             android:name=".FavoriteDetailActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
             android:name=".MainActivity"
-            android:theme="@style/Theme.AppCompat"
-            android:launchMode="singleTop"/>
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.AppCompat" />
         <activity
             android:name=".AboutActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
@@ -38,6 +58,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".widgets.FavoriteWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
     </application>
 
 </manifest>
