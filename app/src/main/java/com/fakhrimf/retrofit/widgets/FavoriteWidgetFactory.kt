@@ -5,27 +5,22 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.Drawable
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.AsyncTask
 import android.util.Log
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService.RemoteViewsFactory
 import com.fakhrimf.retrofit.R
 import com.fakhrimf.retrofit.model.FavoriteModel
-import com.fakhrimf.retrofit.utils.TAG_ERROR
 import com.fakhrimf.retrofit.utils.WIDGET_INTENT_KEY
 import com.fakhrimf.retrofit.utils.source.local.DatabaseContract
 import com.fakhrimf.retrofit.utils.source.local.FavoritesHelper
-import com.squareup.picasso.Picasso
-import com.squareup.picasso.Target
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import java.net.URL
+import java.net.UnknownHostException
 
 class FavoriteWidgetFactory(private val context: Context) : RemoteViewsFactory {
-    private val imageBitmaps = ArrayList<ImageModel>()
-    var bitmapImage: Bitmap? = null
+    private var bitmapImage: Bitmap? = null
 
     override fun onCreate() {}
 
@@ -41,7 +36,7 @@ class FavoriteWidgetFactory(private val context: Context) : RemoteViewsFactory {
         val remoteViews = RemoteViews(context.packageName, R.layout.widget_item)
         val widgetItems = cursorToArrayList()
         val baseUrl = "https://image.tmdb.org/t/p/w500"
-        val network = NetworkToBitmap()
+        val network = NetworkToBitmap(context)
         bitmapImage = network.getBitmap(baseUrl + widgetItems[position].posterPath)
         Log.d("REMOTECHECK", "getViewAt: $bitmapImage, ${widgetItems[position].posterPath}")
         remoteViews.setImageViewBitmap(R.id.widgetImageItem, bitmapImage)
@@ -64,7 +59,8 @@ class FavoriteWidgetFactory(private val context: Context) : RemoteViewsFactory {
         val cursor = helper.queryCall()
         val favoritesList = ArrayList<FavoriteModel>()
         while (cursor.moveToNext()) {
-            val id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.ID))
+            val id =
+                cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.ID))
             val title =
                 cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.FavColumns.TITLE))
             val vote =
@@ -84,23 +80,42 @@ class FavoriteWidgetFactory(private val context: Context) : RemoteViewsFactory {
         return favoritesList
     }
 
+    class NetworkToBitmap(private val context: Context) : AsyncTask<URL, Nothing, Bitmap>() {
+        private fun isConnected(context: Context): Boolean {
+            var result = false
+            val connManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
+            connManager?.run {
+                connManager.getNetworkCapabilities(connManager.activeNetwork)?.run {
+                    result = when {
+                        hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+                        hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+                        hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+                        else -> false
+                    }
+                }
+            }
+            return result
+        }
 
-    class NetworkToBitmap : AsyncTask<URL, String, Bitmap>() {
         override fun doInBackground(vararg params: URL?): Bitmap {
             val bitmap: Bitmap?
             val networkURL = params[0]
-            bitmap = BitmapFactory.decodeStream(
-                networkURL?.openConnection()?.getInputStream()
-            )
+            bitmap = if (isConnected(context)) {
+                try {
+                    BitmapFactory.decodeStream(
+                        networkURL?.openConnection()?.getInputStream()
+                    )
+                } catch (e: UnknownHostException) {
+                    BitmapFactory.decodeResource(context.resources, R.drawable.no_internet_dino)
+                }
+            } else {
+                BitmapFactory.decodeResource(context.resources, R.drawable.no_internet_dino)
+            }
             return bitmap
         }
-        fun getBitmap(url:String):Bitmap {
+
+        fun getBitmap(url: String): Bitmap {
             return doInBackground(URL(url))
         }
     }
-
-    data class ImageModel(
-            val favoriteModel: FavoriteModel,
-            val bitmap: Bitmap
-    )
 }
