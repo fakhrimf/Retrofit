@@ -9,6 +9,13 @@
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/search"
+        android:icon="@drawable/ic_search"
+        android:title="@string/search"
+        app:showAsAction="ifRoom|collapseActionView"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"/>
+
+    <item
         android:id="@+id/list"
         android:title="@string/list"/>
 
@@ -21,4 +28,8 @@
         android:title="@string/grid"/>
 
     <item android:title="@string/language"/>
+
+    <item
+        android:id="@+id/settings"
+        android:title="@string/settings"/>
 </menu>

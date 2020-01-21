@@ -39,4 +39,16 @@
     <string name="search">Cari</string>
     <string name="search_query_hint_favorites">Cari di favorit…</string>
     <string name="my_favorites">Favorit Saya</string>
+    <string name="good_morning">Selamat Pagi!</string>
+    <string name="notification_text">Sini… Liat film-film populer yang sedang tayang yuk!</string>
+    <string name="settings">Pengaturan</string>
+    <string name="notifications">Notifikasi</string>
+    <string name="show_daily_notifications">Tampilkan notifikasi harian</string>
+    <string name="daily_notification_summary">Aktifkan fitur ini untuk menampilkan notifikasi harian</string>
+    <string name="release_notification_summary">Aktifkan fitur ini untuk menampilkan notifikasi saat ada film baru</string>
+    <string name="release_notification">Beritahu saya saat ada film baru</string>
+    <string name="search_movies_shows">Cari Film/Acara</string>
+    <string name="search_movies">Cari Film</string>
+    <string name="search_shows">Cari Acara</string>
+    <string name="no_data">No Data</string>
 </resources>

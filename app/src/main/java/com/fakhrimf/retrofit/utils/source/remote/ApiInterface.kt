@@ -22,4 +22,11 @@ interface ApiInterface {
 
     @GET("tv/popular")
     fun getPopularShow(@Query("api_key") apiKey: String, @Query("language") language: String): Call<ShowResponse>
+
+    //Search
+    @GET("search/movie")
+    fun searchMovie(@Query("api_key") apiKey: String, @Query("language") language: String, @Query("query") query: String): Call<MovieResponse>
+
+    @GET("search/tv")
+    fun searchShow(@Query("api_key") apiKey: String, @Query("language") language: String, @Query("query") query: String): Call<ShowResponse>
 }

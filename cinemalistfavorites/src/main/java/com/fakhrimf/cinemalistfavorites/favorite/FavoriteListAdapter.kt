@@ -1,5 +1,6 @@
 package com.fakhrimf.cinemalistfavorites.favorite
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Filter
@@ -76,6 +77,5 @@ class FavoriteListAdapter(private val item: ArrayList<FavoriteModel>, private va
             filterList.addAll(results?.values as ArrayList<FavoriteModel>)
             notifyDataSetChanged()
         }
-
     }
 }

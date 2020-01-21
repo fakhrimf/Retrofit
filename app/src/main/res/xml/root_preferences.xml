@@ -1,0 +1,17 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="@string/notifications">
+        <SwitchPreference
+            app:defaultValue="false"
+            app:key="daily"
+            app:summary="@string/daily_notification_summary"
+            app:title="@string/show_daily_notifications" />
+
+        <SwitchPreference
+            app:defaultValue="false"
+            app:key="release"
+            app:summary="@string/release_notification_summary"
+            app:title="@string/release_notification" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

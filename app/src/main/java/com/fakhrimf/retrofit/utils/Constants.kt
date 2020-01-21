@@ -30,6 +30,15 @@ const val CONTENT_SCHEME = "content"
 const val AUTHORITY = "com.fakhrimf.retrofit"
 const val FAVORITE_PROVIDER = 64
 const val FAVORITE_PROVIDER_ID = 73
+const val CHANNEL_DESC = "Reminds you to comeback and check movies you love"
+const val REMINDER_SHARED_PREFERENCES_KEY = "reminder_shared_preferences"
+const val CHANNEL_ID = "primary_notification_channel"
+const val CHANNEL_NAME = "Reminder Notification"
+const val NOTIFICATION_REQUEST_CODE = 3
+const val HOUR_SEVEN = "07"
+const val MINUTE_ZERO = "00"
+const val KEY_DAILY = "daily"
+const val KEY_RELEASE = "release"
 
 enum class Type {
     LIST, CARD, GRID
