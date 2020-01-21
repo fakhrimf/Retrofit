@@ -53,4 +53,6 @@
     <string name="search_movies">Search Movies</string>
     <string name="search_shows">Search Shows</string>
     <string name="no_data">No Data</string>
+    <string name="has_released">%s Has Released!</string>
+    <string name="new_release">New Release!</string>
 </resources>

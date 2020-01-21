@@ -50,9 +50,9 @@ class SettingsActivity : AppCompatActivity() {
         private fun init() {
             showDaily = findPreference<SwitchPreference>(KEY_DAILY) as SwitchPreference
             showRelease = findPreference<SwitchPreference>(KEY_RELEASE) as SwitchPreference
-            val sharedPreferences = preferenceManager.sharedPreferences
-            showDaily.isChecked = sharedPreferences.getBoolean(KEY_DAILY, false)
-            showRelease.isChecked = sharedPreferences.getBoolean(KEY_RELEASE, false)
+            val receiver = ReminderReceiver()
+            showDaily.isChecked = receiver.isNotificationActivated(KEY_DAILY, context)
+            showRelease.isChecked = receiver.isNotificationActivated(KEY_RELEASE, context)
         }
 
         override fun onResume() {
@@ -73,6 +73,11 @@ class SettingsActivity : AppCompatActivity() {
                 }
                 KEY_RELEASE -> {
                     showRelease.isChecked = sharedPreferences?.getBoolean(KEY_RELEASE, false) ?: false
+                    if (showRelease.isChecked) {
+                        receiver.activateReleaseNotification(requireContext(), true)
+                    } else {
+                        receiver.activateReleaseNotification(requireContext(), false)
+                    }
                 }
             }
         }
