@@ -39,12 +39,15 @@
                 android:resource="@xml/favorite_stacks_info" />
         </receiver>
 
-        <receiver android:name=".utils.notification.ReminderReceiver"/>
+        <receiver
+            android:name=".utils.notification.ReminderReceiver"
+            android:enabled="true"
+            android:exported="true" />
 
         <activity
             android:name=".settings.SettingsActivity"
             android:label="@string/settings"
-            android:theme="@style/Theme.AppCompat"/>
+            android:theme="@style/Theme.AppCompat" />
 
         <activity
             android:name=".FavoriteDetailActivity"

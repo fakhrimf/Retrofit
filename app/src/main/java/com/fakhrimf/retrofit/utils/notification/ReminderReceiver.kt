@@ -36,6 +36,10 @@ class ReminderReceiver : BroadcastReceiver() {
                 notifyReleaseDate(context)
             }
         }
+        if(intent?.action == Intent.ACTION_BOOT_COMPLETED || intent?.action == Intent.ACTION_TIME_CHANGED) {
+            activateNotification(context, true)
+            activateReleaseNotification(context, true)
+        }
     }
 
     private fun createChannel(context: Context?): NotificationManager {
@@ -83,14 +87,13 @@ class ReminderReceiver : BroadcastReceiver() {
         GlobalScope.launch(Dispatchers.Default) {
             getMovie(context)
             delay(2000)
-            Log.d("LISTMOVIE", "notifyReleaseDate, after delay: $list")
             if (list != null) if (list!!.isNotEmpty()) {
                 val intentApp = Intent(context, MovieDetailActivity::class.java)
-                intentApp.putExtra(VALUE_KEY, list!![1])
-                val pendingIntentApp = PendingIntent.getActivity(context, NOTIFICATION_REQUEST_CODE, intentApp, Intent.FILL_IN_ACTION)
+                intentApp.putExtra(VALUE_KEY, list!![0])
+                val pendingIntentApp = PendingIntent.getActivity(context, NOTIFICATION_RELEASE_REQUEST_CODE, intentApp, Intent.FILL_IN_ACTION)
                 val notifyBuilder = NotificationCompat.Builder(context, CHANNEL_ID).apply {
                     setContentTitle(context.getString(R.string.new_release))
-                    setContentText(context.getString(R.string.has_released, list!![1].title))
+                    setContentText(context.getString(R.string.has_released, list!![0].title))
                     setSmallIcon(R.drawable.ic_star_24)
                     setContentIntent(pendingIntentApp)
                     setAutoCancel(true)
@@ -124,26 +127,28 @@ class ReminderReceiver : BroadcastReceiver() {
         })
     }
 
-    private fun getPendingIntent(context: Context, intent: Intent): PendingIntent {
-        return PendingIntent.getBroadcast(context, NOTIFICATION_REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+    private fun getPendingIntent(context: Context): PendingIntent {
+        return PendingIntent.getBroadcast(context, NOTIFICATION_REQUEST_CODE, Intent(context, ReminderReceiver::class.java).putExtra(RECEIVER_INTENT_KEY, KEY_DAILY), PendingIntent.FLAG_UPDATE_CURRENT)
     }
 
-    private fun getReleasePendingIntent(context: Context, intent: Intent): PendingIntent {
-        return PendingIntent.getBroadcast(context, NOTIFICATION_RELEASE_REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+    private fun getReleasePendingIntent(context: Context): PendingIntent {
+        return PendingIntent.getBroadcast(context, NOTIFICATION_RELEASE_REQUEST_CODE, Intent(context, ReminderReceiver::class.java).putExtra(RECEIVER_INTENT_KEY, KEY_RELEASE), PendingIntent.FLAG_UPDATE_CURRENT)
     }
 
     fun activateReleaseNotification(context: Context, activate: Boolean) {
         val intentApp = Intent(context, MainActivity::class.java)
         intentApp.putExtra(RECEIVER_INTENT_KEY, KEY_RELEASE)
-        val pendingIntentApp = getReleasePendingIntent(context, intentApp)
+        val pendingIntentApp = getReleasePendingIntent(context)
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val calendar = Calendar.getInstance()
         calendar.run {
             timeInMillis = System.currentTimeMillis()
-            set(Calendar.HOUR_OF_DAY, HOUR_SEVEN.toInt())
+            set(Calendar.HOUR_OF_DAY, HOUR_EIGHT.toInt())
+            set(Calendar.MINUTE, MINUTE_ZERO.toInt())
         }
         if (activate) {
             alarmManager.apply {
+                setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntentApp)
                 setRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, AlarmManager.INTERVAL_DAY, pendingIntentApp)
             }
             createReleaseChannel(context)
@@ -156,15 +161,17 @@ class ReminderReceiver : BroadcastReceiver() {
     fun activateNotification(context: Context, activate: Boolean) {
         val intentApp = Intent(context, MainActivity::class.java)
         intentApp.putExtra(RECEIVER_INTENT_KEY, KEY_DAILY)
-        val pendingIntentApp = getPendingIntent(context, intentApp)
+        val pendingIntentApp = getPendingIntent(context)
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val calendar = Calendar.getInstance()
         calendar.run {
             timeInMillis = System.currentTimeMillis()
-            set(Calendar.HOUR_OF_DAY, HOUR_SEVEN.toInt())
+            set(Calendar.HOUR_OF_DAY, HOUR_NINE.toInt())
+            set(Calendar.MINUTE, MINUTE_ZERO.toInt())
         }
         if (activate) {
             alarmManager.apply {
+                setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntentApp)
                 setRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, AlarmManager.INTERVAL_DAY, pendingIntentApp)
             }
             createChannel(context)
@@ -174,7 +181,7 @@ class ReminderReceiver : BroadcastReceiver() {
     }
 
     fun isNotificationActivated(type: String, context: Context?): Boolean {
-        val intentApp = Intent(context, MainActivity::class.java)
+        val intentApp = Intent(context, ReminderReceiver::class.java)
         return when (type) {
             KEY_DAILY -> (PendingIntent.getBroadcast(context, NOTIFICATION_REQUEST_CODE, intentApp, PendingIntent.FLAG_NO_CREATE)) != null
             else -> (PendingIntent.getBroadcast(context, NOTIFICATION_RELEASE_REQUEST_CODE, intentApp, PendingIntent.FLAG_NO_CREATE)) != null

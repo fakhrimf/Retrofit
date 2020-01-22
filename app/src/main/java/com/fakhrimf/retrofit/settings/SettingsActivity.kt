@@ -17,9 +17,9 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.settings_activity)
         supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.settings, SettingsFragment())
-            .commit()
+                .beginTransaction()
+                .replace(R.id.settings, SettingsFragment())
+                .commit()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
@@ -72,7 +72,8 @@ class SettingsActivity : AppCompatActivity() {
                     }
                 }
                 KEY_RELEASE -> {
-                    showRelease.isChecked = sharedPreferences?.getBoolean(KEY_RELEASE, false) ?: false
+                    showRelease.isChecked = sharedPreferences?.getBoolean(KEY_RELEASE, false)
+                            ?: false
                     if (showRelease.isChecked) {
                         receiver.activateReleaseNotification(requireContext(), true)
                     } else {
