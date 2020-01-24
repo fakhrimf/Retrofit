@@ -14,13 +14,15 @@ import com.fakhrimf.retrofit.model.MovieResponse
 import com.fakhrimf.retrofit.utils.*
 import com.fakhrimf.retrofit.utils.source.remote.ApiClient
 import com.fakhrimf.retrofit.utils.source.remote.ApiInterface
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 class ReminderReceiver : BroadcastReceiver() {
     var list: ArrayList<MovieModel>? = null
@@ -36,7 +38,7 @@ class ReminderReceiver : BroadcastReceiver() {
                 notifyReleaseDate(context)
             }
         }
-        if(intent?.action == Intent.ACTION_BOOT_COMPLETED || intent?.action == Intent.ACTION_TIME_CHANGED) {
+        if (intent?.action == Intent.ACTION_BOOT_COMPLETED || intent?.action == Intent.ACTION_TIME_CHANGED) {
             activateNotification(context, true)
             activateReleaseNotification(context, true)
         }
@@ -86,15 +88,26 @@ class ReminderReceiver : BroadcastReceiver() {
     private fun notifyReleaseDate(context: Context) {
         GlobalScope.launch(Dispatchers.Default) {
             getMovie(context)
-            delay(2000)
+            delay(5000)
             if (list != null) if (list!!.isNotEmpty()) {
                 val intentApp = Intent(context, MovieDetailActivity::class.java)
                 intentApp.putExtra(VALUE_KEY, list!![0])
                 val pendingIntentApp = PendingIntent.getActivity(context, NOTIFICATION_RELEASE_REQUEST_CODE, intentApp, Intent.FILL_IN_ACTION)
                 val notifyBuilder = NotificationCompat.Builder(context, CHANNEL_ID).apply {
                     setContentTitle(context.getString(R.string.new_release))
-                    setContentText(context.getString(R.string.has_released, list!![0].title))
+                    setContentText(context.getString(R.string.has_released, list!!.size))
                     setSmallIcon(R.drawable.ic_star_24)
+                    setStyle(NotificationCompat.InboxStyle().run {
+                        if (list!!.size > 5) {
+                            for (i in 0 until 5) {
+                                addLine("${list!![i].title}")
+                            }
+                            setSummaryText(context.getString(R.string.and_more, list!!.size - 5))
+                        } else for (i in 0 until list!!.size) {
+                            addLine("${list!![i].title}")
+                        }
+                        addLine(context.getString(R.string.check_now))
+                    })
                     setContentIntent(pendingIntentApp)
                     setAutoCancel(true)
                 }
@@ -149,7 +162,7 @@ class ReminderReceiver : BroadcastReceiver() {
         if (activate) {
             alarmManager.apply {
                 setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntentApp)
-                setRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, AlarmManager.INTERVAL_DAY, pendingIntentApp)
+                setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, AlarmManager.INTERVAL_DAY, pendingIntentApp)
             }
             createReleaseChannel(context)
 //            notifyReleaseDate(context)
@@ -172,7 +185,7 @@ class ReminderReceiver : BroadcastReceiver() {
         if (activate) {
             alarmManager.apply {
                 setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntentApp)
-                setRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, AlarmManager.INTERVAL_DAY, pendingIntentApp)
+                setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, AlarmManager.INTERVAL_DAY, pendingIntentApp)
             }
             createChannel(context)
         } else {

@@ -51,6 +51,8 @@
     <string name="search_movies">Cari Film</string>
     <string name="search_shows">Cari Acara</string>
     <string name="no_data">No Data</string>
-    <string name="has_released">%s Baru Rilis!</string>
+    <string name="has_released">%d Film rilis hari ini!</string>
     <string name="new_release">Baru Rilis!</string>
+    <string name="and_more">Dan %d lainnya</string>
+    <string name="check_now">Cek Sekarang!</string>
 </resources>
