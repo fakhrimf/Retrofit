@@ -40,25 +40,35 @@ object BindingAdapterUtils : BaseObservable() {
     @SuppressLint("SetTextI18n")
     @JvmStatic
     @BindingAdapter("set_release_date_movie")
-    fun setReleaseMovie(textView: TextView, text: String) {
+    fun setReleaseMovie(textView: TextView, text: String?) {
         val context = textView.context
         val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-        val date: Date? = sdf.parse(text)
-        val check = Date() > date
-        if (check) textView.text = context.getString(R.string.released_at) + " " + text
-        else textView.text = context.getString(R.string.unreleased)
+        var date:Date? = null
+        if(text != null) if(text.isNotEmpty()) date = sdf.parse(text)
+        var check = false
+        if (date != null) check = Date() > date
+        when {
+            check -> textView.text = context.getString(R.string.released_at) + " " + text
+            date == null -> textView.text = context.getString(R.string.no_data)
+            else -> textView.text = context.getString(R.string.unreleased)
+        }
     }
 
     @SuppressLint("SetTextI18n")
     @JvmStatic
     @BindingAdapter("set_release_date_show")
-    fun setReleaseShow(textView: TextView, text: String) {
+    fun setReleaseShow(textView: TextView, text: String?) {
         val context = textView.context
         val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-        val date: Date? = sdf.parse(text)
-        val check = Date() > date
-        if (check) textView.text = context.getString(R.string.first_aired) + " " + text
-        else textView.text = context.getString(R.string.unreleased)
+        var date:Date? = null
+        if(text != null) if(text.isNotEmpty()) date = sdf.parse(text)
+        var check = false
+        if (date != null) check = Date() > date
+        when {
+            check -> textView.text = context.getString(R.string.first_aired) + " " + text
+            date == null -> textView.text = context.getString(R.string.no_data)
+            else -> textView.text = context.getString(R.string.unreleased)
+        }
     }
 
     @SuppressLint("SetText18n", "SetTextI18n")

@@ -16,10 +16,20 @@ interface ApiInterface {
     @GET("movie/popular")
     fun getPopularMovie(@Query("api_key") apiKey: String, @Query("language") language: String): Call<MovieResponse>
 
+    @GET("discover/movie")
+    fun getDiscoverMovie(@Query("api_key") apiKey: String, @Query("language") language: String, @Query("primary_release_date.gte") releaseDateGte: String, @Query("primary_release_date.lte") releaseDateLte: String): Call<MovieResponse>
+
     //For Shows
     @GET("tv/latest")
     fun getLatestShow(@Query("api_key") apiKey: String, @Query("language") language: String): Call<ShowModel>
 
     @GET("tv/popular")
     fun getPopularShow(@Query("api_key") apiKey: String, @Query("language") language: String): Call<ShowResponse>
+
+    //Search
+    @GET("search/movie")
+    fun searchMovie(@Query("api_key") apiKey: String, @Query("language") language: String, @Query("query") query: String): Call<MovieResponse>
+
+    @GET("search/tv")
+    fun searchShow(@Query("api_key") apiKey: String, @Query("language") language: String, @Query("query") query: String): Call<ShowResponse>
 }

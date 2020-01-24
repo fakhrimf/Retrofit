@@ -12,6 +12,7 @@ import com.fakhrimf.retrofit.AboutActivity
 import com.fakhrimf.retrofit.FavoriteDetailActivity
 import com.fakhrimf.retrofit.R
 import com.fakhrimf.retrofit.model.FavoriteModel
+import com.fakhrimf.retrofit.settings.SettingsActivity
 import com.fakhrimf.retrofit.utils.DURATION
 import com.fakhrimf.retrofit.utils.OPAQUE_ALPHA
 import com.fakhrimf.retrofit.utils.TRANSPARENT_ALPHA
@@ -100,6 +101,10 @@ class FavoriteFragment : Fragment(), FavoriteUserActionListener {
             }
             R.id.language -> {
                 startActivity(Intent(Settings.ACTION_LOCALE_SETTINGS))
+                true
+            }
+            R.id.settings -> {
+                startActivity(Intent(context, SettingsActivity::class.java))
                 true
             }
             else -> {

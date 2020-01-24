@@ -106,4 +106,31 @@ class ShowVM(application: Application) : AndroidViewModel(application) {
         }
         prefs.apply()
     }
+
+    fun searchShow(apiInterface: ApiInterface, query: String) {
+        val apiKey = API_KEY
+        val currentLocale = context.resources.configuration.locales.get(0)
+        var locale = currentLocale.toString().split("_")[1].toLowerCase(Locale.ENGLISH)
+        if (locale != LOCALE_ID) {
+            locale = LOCALE_EN
+        }
+        val call: Call<ShowResponse> = apiInterface.searchShow(apiKey, locale, query)
+        call.enqueue(object : Callback<ShowResponse> {
+            override fun onFailure(call: Call<ShowResponse>, t: Throwable) {
+                Toast.makeText(context, context.getString(R.string.error), Toast.LENGTH_LONG).show()
+                Log.d(TAG_ERROR, MOVIE_POPULAR_FAIL)
+            }
+
+            override fun onResponse(call: Call<ShowResponse>, response: Response<ShowResponse>) {
+                showList = response.body()?.results
+                showList?.let {
+                    val context = getApplication() as Context
+                    for (i in 0 until it.size) {
+                        it[i].type = context.getString(R.string.movies)
+                    }
+                }
+                isLoaded = true
+            }
+        })
+    }
 }

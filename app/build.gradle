@@ -9,7 +9,7 @@ android {
     buildToolsVersion "29.0.2"
     defaultConfig {
         applicationId "com.fakhrimf.retrofit"
-        minSdkVersion 24
+        minSdkVersion 27
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -37,6 +37,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.github.bumptech.glide:glide:4.10.0'
+    implementation 'androidx.preference:preference:1.1.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.10.0'
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"

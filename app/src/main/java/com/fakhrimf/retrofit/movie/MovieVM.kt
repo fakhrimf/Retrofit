@@ -108,4 +108,33 @@ class MovieVM(application: Application) : AndroidViewModel(application) {
         }
         prefs.apply()
     }
+
+    fun searchMovies(apiInterface: ApiInterface, query: String) {
+        val apiKey = API_KEY
+        val currentLocale = context.resources.configuration.locales.get(0)
+        var locale = currentLocale.toString().split("_")[1].toLowerCase(Locale.ENGLISH)
+        if (locale != LOCALE_ID) {
+            locale = LOCALE_EN
+        }
+        val call: Call<MovieResponse> = apiInterface.searchMovie(apiKey, locale, query)
+        Log.d("SEARCHED", "searchMovies: $call")
+        call.enqueue(object : Callback<MovieResponse> {
+            override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
+                Toast.makeText(context, context.getString(R.string.error), Toast.LENGTH_LONG).show()
+                Log.d(TAG_ERROR, MOVIE_POPULAR_FAIL)
+            }
+
+            override fun onResponse(call: Call<MovieResponse>, response: Response<MovieResponse>) {
+                moviesList.value = response.body()?.results
+                Log.d("SEARCHED", "onResponse: ${moviesList.value}")
+                moviesList.value?.let {
+                    val context = getApplication() as Context
+                    for (i in 0 until it.size) {
+                        it[i].type = context.getString(R.string.movies)
+                    }
+                }
+                isLoaded = true
+            }
+        })
+    }
 }
